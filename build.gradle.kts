@@ -24,6 +24,8 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa:3.1.2")
 	// MariaDB Java Client
 	implementation("org.mariadb.jdbc:mariadb-java-client:3.1.4")
+	// H2 Database Engine
+	testImplementation("com.h2database:h2:2.2.220")
 	// Spring Boot Dev Tools
 	implementation("org.springframework.boot:spring-boot-devtools:3.1.2")
 	// Spring Boot Starter Thymeleaf
