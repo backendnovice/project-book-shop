@@ -7,6 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class BoardServiceImpl implements BoardService {
     private final BoardRepository boardRepository;
@@ -21,17 +23,41 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public Page<BoardDTO> searchWithTitle(String title, Pageable pageable) {
+    public Page<BoardDTO> searchWithOptions(BoardDTO boardDTO, Pageable pageable) {
+        if(boardDTO.getTitle() != null) {
+            return searchWithTitle(boardDTO.getTitle(), pageable);
+        }
+        if(boardDTO.getContent() != null) {
+            return searchWithContent(boardDTO.getContent(), pageable);
+        }
+        if(boardDTO.getWriter() != null) {
+            return searchWithWriter(boardDTO.getWriter(), pageable);
+        }
+
+        return searchAll(pageable);
+    }
+
+    @Override
+    public BoardDTO write(BoardDTO boardDTO) {
+        return convertToDTO(boardRepository.save(convertToEntity(boardDTO)));
+    }
+
+    @Override
+    public BoardDTO read(Long id) {
+        Optional<Board> result = boardRepository.findById(id);
+
+        return convertToDTO(result.get());
+    }
+
+    private Page<BoardDTO> searchWithTitle(String title, Pageable pageable) {
         return boardRepository.findAllByTitleContainsIgnoreCase(title, pageable).map(this::convertToDTO);
     }
 
-    @Override
-    public Page<BoardDTO> searchWithContent(String content, Pageable pageable) {
+    private Page<BoardDTO> searchWithContent(String content, Pageable pageable) {
         return boardRepository.findAllByContentContainsIgnoreCase(content, pageable).map(this::convertToDTO);
     }
 
-    @Override
-    public Page<BoardDTO> searchWithWriter(String writer, Pageable pageable) {
+    private Page<BoardDTO> searchWithWriter(String writer, Pageable pageable) {
         return boardRepository.findAllByWriterContainsIgnoreCase(writer, pageable).map(this::convertToDTO);
     }
 
@@ -42,6 +68,14 @@ public class BoardServiceImpl implements BoardService {
                 .content(board.getContent())
                 .writer(board.getWriter())
                 .date(board.getModifiedDate())
+                .build();
+    }
+
+    private Board convertToEntity(BoardDTO boardDTO) {
+        return Board.builder()
+                .title(boardDTO.getTitle())
+                .content(boardDTO.getContent())
+                .writer(boardDTO.getWriter())
                 .build();
     }
 }

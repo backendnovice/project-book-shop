@@ -7,9 +7,9 @@ import org.springframework.data.domain.Pageable;
 public interface BoardService {
     Page<BoardDTO> searchAll(Pageable pageable);
 
-    Page<BoardDTO> searchWithTitle(String title, Pageable pageable);
+    Page<BoardDTO> searchWithOptions(BoardDTO boardDTO, Pageable pageable);
 
-    Page<BoardDTO> searchWithContent(String content, Pageable pageable);
+    BoardDTO write(BoardDTO boardDTO);
 
-    Page<BoardDTO> searchWithWriter(String writer, Pageable pageable);
+    BoardDTO read(Long id);
 }
