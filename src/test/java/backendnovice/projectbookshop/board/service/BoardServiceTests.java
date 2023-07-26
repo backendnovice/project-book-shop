@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.*;
@@ -27,13 +28,11 @@ public class BoardServiceTests {
     @InjectMocks
     private BoardServiceImpl boardService;
 
-    private List<Board> fakeBoardList;
-
     private Page<Board> fakeBoardPage;
 
     @BeforeAll
     void initialize() {
-        fakeBoardList = new ArrayList<>();
+        List<Board> fakeBoardList = new ArrayList<>();
         fakeBoardPage = new PageImpl<>(fakeBoardList);
     }
 
@@ -49,33 +48,91 @@ public class BoardServiceTests {
     }
 
     @Test
-    @DisplayName("Search with Title Test")
-    void searchWithTitleTest() {
+    @DisplayName("Search with Options Test (Title)")
+    void searchWithOptionsTestWithTitle() {
+        // given
+        BoardDTO boardDTO = BoardDTO.builder()
+                .title("title")
+                .build();
+
         // when
         when(boardRepository.findAllByTitleContainsIgnoreCase(any(), any(PageRequest.class))).thenReturn(fakeBoardPage);
-        Page<BoardDTO> result = boardService.searchWithTitle("title", PageRequest.of(0, 10));
+        Page<BoardDTO> result = boardService.searchWithOptions(boardDTO, PageRequest.of(0, 10));
 
         // then
         assertThat(result).isNotNull();
     }
 
     @Test
-    @DisplayName("Search with Content Test")
-    void searchWithContentTest() {
+    @DisplayName("Search with Options Test (Content)")
+    void searchWithOptionsTestWithContent() {
+        // given
+        BoardDTO boardDTO = BoardDTO.builder()
+                .content("content")
+                .build();
+
         // when
         when(boardRepository.findAllByContentContainsIgnoreCase(any(), any(PageRequest.class))).thenReturn(fakeBoardPage);
-        Page<BoardDTO> result = boardService.searchWithContent("content", PageRequest.of(0, 10));
+        Page<BoardDTO> result = boardService.searchWithOptions(boardDTO, PageRequest.of(0, 10));
 
         // then
         assertThat(result).isNotNull();
     }
 
     @Test
-    @DisplayName("Search with Writer Test")
-    void searchWithWriterTest() {
+    @DisplayName("Search with Options Test (Writer)")
+    void searchWithOptionsTestWithWriter() {
+        // given
+        BoardDTO boardDTO = BoardDTO.builder()
+                .writer("writer")
+                .build();
+
         // when
         when(boardRepository.findAllByWriterContainsIgnoreCase(any(), any(PageRequest.class))).thenReturn(fakeBoardPage);
-        Page<BoardDTO> result = boardService.searchWithWriter("writer", PageRequest.of(0, 10));
+        Page<BoardDTO> result = boardService.searchWithOptions(boardDTO, PageRequest.of(0, 10));
+
+        // then
+        assertThat(result).isNotNull();
+    }
+
+    @Test
+    @DisplayName("Search with Options Test (Null)")
+    void searchWithOptionsTestWithNull() {
+        // given
+        BoardDTO boardDTO = mock(BoardDTO.class);
+
+        // when
+        when(boardRepository.findAll(any(PageRequest.class))).thenReturn(fakeBoardPage);
+        Page<BoardDTO> result = boardService.searchWithOptions(boardDTO, PageRequest.of(0, 10));
+
+        // then
+        assertThat(result).isNotNull();
+    }
+
+    @Test
+    @DisplayName("Write Test")
+    void writeTest() {
+        // given
+        Board board = mock(Board.class);
+        BoardDTO boardDTO = mock(BoardDTO.class);
+
+        // when
+        when(boardRepository.save(any(Board.class))).thenReturn(board);
+        BoardDTO result = boardService.write(boardDTO);
+
+        // then
+        assertThat(result).isNotNull();
+    }
+
+    @Test
+    @DisplayName("Read Test")
+    void readTest() {
+        // given
+        Board board = mock(Board.class);
+
+        // when
+        when(boardRepository.findById(anyLong())).thenReturn(Optional.ofNullable(board));
+        BoardDTO result = boardService.read(1L);
 
         // then
         assertThat(result).isNotNull();
