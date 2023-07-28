@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<!-- Main -->
+<div>
+    <div>
+        <h3>게시글 등록</h3>
+    </div>
+    <div>
+        <form id="form-write" method="POST" th:action="@{~/board/write}">
+            <div>
+                <label for="title">제목</label>
+                <input type="text" id="title" name="title" maxlength="255" placeholder="제목을 입력해주세요">
+            </div>
+            <div>
+                <label for="writer">작성자</label>
+                <input type="text" id="writer" name="writer" maxlength="255" placeholder="작성자를 입력해주세요">
+            </div>
+            <div>
+                <label for="content">내용</label>
+                <textarea id="content" name="content" maxlength="255" placeholder="내용을 입력해주세요"></textarea>
+            </div>
+            <div>
+                <button type="button" id="btn-write">글 쓰기</button>
+                <button type="button" id="btn-back">뒤로가기</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Script -->
+<script>
+    const writeButton = document.getElementById('btn-write');
+    const listButton = document.getElementById('btn-back');
+
+    writeButton.onclick = function() {
+        submitForm();
+    }
+
+    listButton.onclick = function() {
+        window.history.back();
+    }
+
+    function submitForm() {
+        let isOk = false;
+
+        if(checkTitle() && checkContent() && checkWriter()) {
+            isOk = true;
+        }
+
+        if(isOk) {
+            let form = document.getElementById('form-write');
+            form.submit();
+        }
+    }
+
+    function checkTitle() {
+        let title = document.getElementById('title').value;
+
+        console.log(title);
+
+        if(title === "") {
+            alert("제목을 입력해 주세요.");
+            return false;
+        }
+
+        return true;
+    }
+
+    function checkContent() {
+        let content = document.getElementById('content').value;
+
+        if(content === "") {
+            alert("게시물이 비어있습니다.");
+            return false;
+        }
+
+        return true;
+    }
+
+    function checkWriter() {
+        let writer = document.getElementById('writer').value;
+
+        if(writer === "") {
+            alert("작성자가 비어있습니다.");
+            return false;
+        }
+
+        return true;
+    }
+</script>
+</body>
+</html>
