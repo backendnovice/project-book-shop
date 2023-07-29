@@ -2,6 +2,7 @@ package backendnovice.projectbookshop.board.service;
 
 import backendnovice.projectbookshop.board.domain.Board;
 import backendnovice.projectbookshop.board.dto.BoardDTO;
+import backendnovice.projectbookshop.board.dto.SearchDTO;
 import backendnovice.projectbookshop.board.repository.BoardRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,20 +19,17 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public Page<BoardDTO> searchAll(Pageable pageable) {
-        return boardRepository.findAll(pageable).map(this::convertToDTO);
-    }
-
-    @Override
-    public Page<BoardDTO> searchWithOptions(BoardDTO boardDTO, Pageable pageable) {
-        if(boardDTO.getTitle() != null) {
-            return searchWithTitle(boardDTO.getTitle(), pageable);
-        }
-        if(boardDTO.getContent() != null) {
-            return searchWithContent(boardDTO.getContent(), pageable);
-        }
-        if(boardDTO.getWriter() != null) {
-            return searchWithWriter(boardDTO.getWriter(), pageable);
+    public Page<BoardDTO> search(SearchDTO searchDTO, Pageable pageable) {
+        if(searchDTO.getTag() != null || searchDTO.getKeyword() != null) {
+            if(searchDTO.getTag().equals("title")) {
+                return searchWithTitle(searchDTO.getKeyword(), pageable);
+            }
+            if(searchDTO.getTag().equals("content")) {
+                return searchWithContent(searchDTO.getKeyword(), pageable);
+            }
+            if(searchDTO.getTag().equals("writer")) {
+                return searchWithWriter(searchDTO.getKeyword(), pageable);
+            }
         }
 
         return searchAll(pageable);
@@ -47,6 +45,10 @@ public class BoardServiceImpl implements BoardService {
         Optional<Board> result = boardRepository.findById(id);
 
         return convertToDTO(result.get());
+    }
+
+    private Page<BoardDTO> searchAll(Pageable pageable) {
+        return boardRepository.findAll(pageable).map(this::convertToDTO);
     }
 
     private Page<BoardDTO> searchWithTitle(String title, Pageable pageable) {

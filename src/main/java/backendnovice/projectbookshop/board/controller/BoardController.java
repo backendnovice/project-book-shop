@@ -1,9 +1,11 @@
 package backendnovice.projectbookshop.board.controller;
 
 import backendnovice.projectbookshop.board.dto.BoardDTO;
+import backendnovice.projectbookshop.board.dto.SearchDTO;
 import backendnovice.projectbookshop.board.service.BoardService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -18,19 +20,12 @@ public class BoardController {
     }
 
     @GetMapping("/list")
-    public String getListPage(Model model, Pageable pageable) {
-        Page<BoardDTO> result = boardService.searchAll(pageable);
-        Pageable pageResult = result.getPageable();
-        model.addAttribute("dto", result);
-        model.addAttribute("page", pageResult);
+    public String getListPage(Model model, SearchDTO searchDTO, @PageableDefault(size = 5) Pageable pageable) {
+        Page<BoardDTO> result = boardService.search(searchDTO, pageable);
+        SearchDTO search = new SearchDTO(result);
 
-        return "board/list";
-    }
-
-    @GetMapping("/list/search")
-    public String getListSearchPage(Model model, BoardDTO boardDTO, Pageable pageable) {
-        Page<BoardDTO> result = boardService.searchWithOptions(boardDTO, pageable);
         model.addAttribute("dto", result);
+        model.addAttribute("search", search);
 
         return "board/list";
     }
@@ -48,11 +43,11 @@ public class BoardController {
         return "board/read";
     }
 
-    @GetMapping("/read/{id}")
-    public String getReadPage(Model model, @PathVariable("id") Long id) {
+    @GetMapping("/read")
+    public String getReadPage(Model model, @RequestParam("id") Long id) {
         BoardDTO result = boardService.read(id);
         model.addAttribute("dto", result);
 
-        return "board/read";
+        return "board/list";
     }
 }

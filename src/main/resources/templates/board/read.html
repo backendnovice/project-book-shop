@@ -5,6 +5,7 @@
     <title>Title</title>
 </head>
 <body>
+<!-- Main -->
 <div>
     <div>
         <h3>게시물 조회</h3>
@@ -23,6 +24,18 @@
             <textarea id="content" th:text="${dto.content}" readonly></textarea>
         </div>
     </div>
+    <div>
+        <button type="button" id="btn-back">뒤로가기</button>
+    </div>
 </div>
+
+<!-- Script -->
+<script>
+    const backButton = document.getElementById('btn-back');
+
+    backButton.onclick = function() {
+        window.history.back();
+    }
+</script>
 </body>
 </html>

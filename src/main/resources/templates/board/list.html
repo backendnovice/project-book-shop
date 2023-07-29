@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Board Test</title>
+</head>
+<body>
+<div>
+    <div>
+        <h3>게시물 목록</h3>
+    </div>
+    <div>
+        <form id="form-search" method="GET" th:action="@{~/board/list}">
+            <select id="select-tag" name="tag">
+                <option value="title" selected>제목</option>
+                <option value="content">내용</option>
+                <option value="writer">작성자</option>
+            </select>
+            <input type="search" id="keyword" name="keyword">
+            <button type="button" id="btn-search">검색</button>
+        </form>
+    </div>
+    <div>
+        <table>
+            <thead>
+                <tr>
+                    <th scope="col">번호</th>
+                    <th scope="col">제목</th>
+                    <th scope="col">작성자</th>
+                    <th scope="col">등록일자</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="data : ${dto}">
+                    <td th:text="${data.getId()}"/>
+                    <td>
+                        <a th:text="${data.getTitle()}" th:href="@{'/board/read?id=' + ${data.getId()}}"></a>
+                    </td>
+                    <td th:text="${data.getWriter()}"/>
+                    <td th:text="${#temporals.format(data.getDate(), 'yyyy-MM-dd')}"/>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <ul th:with="start=${search.getStartPage()}, current=${search.getCurrentPage()}, final=${search.getFinalPage()}, tag=${search.getTag()}, keyword=${search.getKeyword()}">
+            <th:block th:if="${tag == null && keyword == null}">
+                <li>
+                    <strong th:if="${start == current}">이전</strong>
+                    <a th:if="${current > start}" th:href="@{/board/list(page=${current - 1})}">이전</a>
+                </li>
+                <li th:each="page : ${#numbers.sequence(start + 1, final + 1)}">
+                    <strong th:if="${page == current + 1}" th:text="${page}"></strong>
+                    <a th:if="${page != current + 1}" th:href="@{/board/list(page=${page - 1})}" th:text="${page}"></a>
+                </li>
+                <li>
+                    <strong th:if="${final == current}">다음</strong>
+                    <a th:if="${current < final}" th:href="@{/board/list(page=${current + 1})}">다음</a>
+                </li>
+            </th:block>
+            <th:block th:unless="${tag == null && keyword == null}">
+                <li>
+                    <strong th:if="${start == current}">이전</strong>
+                    <a th:if="${current > start}" th:href="@{/board/list(page=${current - 1}, tag=${tag}, keyword=${keyword})}">이전</a>
+                </li>
+                <li th:each="page : ${#numbers.sequence(start + 1, final + 1)}">
+                    <strong th:if="${page == current + 1}" th:text="${page}"></strong>
+                    <a th:if="${page != current + 1}" th:href="@{/board/list(page=${page - 1}, tag=${tag}, keyword=${keyword})}" th:text="${page}"></a>
+                </li>
+                <li>
+                    <strong th:if="${final == current}">다음</strong>
+                    <a th:if="${current < final}" th:href="@{/board/list(page=${current + 1}, tag=${tag}, keyword=${keyword})}">다음</a>
+                </li>
+            </th:block>
+        </ul>
+    </div>
+    <div>
+        <button type="button" id="btn-write">글쓰기</button>
+    </div>
+</div>
+
+<!-- Script -->
+<script>
+    const searchButton = document.getElementById('btn-search');
+    const writeButton = document.getElementById('btn-write');
+
+    writeButton.onclick = function() {
+        location.href = "/board/write";
+    }
+
+    searchButton.onclick = function() {
+        submitForm();
+    }
+
+    function submitForm() {
+        let isOk = false;
+
+        if(checkSearchValue()) {
+            isOk = true;
+        }
+
+        if(isOk) {
+            let form = document.getElementById('form-search');
+            form.submit();
+        }
+    }
+
+    function checkSearchValue() {
+        let search = document.getElementById('keyword').value;
+
+        if(search === "") {
+            alert("검색어를 입력해 주세요.");
+            return false;
+        }
+
+        return true;
+    }
+</script>
+</body>
+</html>
