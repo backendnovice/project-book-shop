@@ -2,6 +2,7 @@ package backendnovice.projectbookshop.board.service;
 
 import backendnovice.projectbookshop.board.domain.Board;
 import backendnovice.projectbookshop.board.dto.BoardDTO;
+import backendnovice.projectbookshop.board.dto.SearchDTO;
 import backendnovice.projectbookshop.board.repository.BoardRepository;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,73 +38,64 @@ public class BoardServiceTests {
     }
 
     @Test
-    @DisplayName("Search All Test")
-    void searchAllTest() {
+    @DisplayName("Search test without any options")
+    void searchTest() {
+        SearchDTO searchDTO = SearchDTO.builder().build();
+
         // when
         when(boardRepository.findAll(any(PageRequest.class))).thenReturn(fakeBoardPage);
-        Page<BoardDTO> result = boardService.searchAll(PageRequest.of(0, 10));
+        Page<BoardDTO> result = boardService.search(searchDTO, PageRequest.of(0, 10));
 
         // then
         assertThat(result).isNotNull();
     }
 
     @Test
-    @DisplayName("Search with Options Test (Title)")
-    void searchWithOptionsTestWithTitle() {
+    @DisplayName("Search test with title")
+    void searchTestWithTitle() {
         // given
-        BoardDTO boardDTO = BoardDTO.builder()
-                .title("title")
+        SearchDTO searchDTO = SearchDTO.builder()
+                .tag("title")
+                .keyword("title")
                 .build();
 
         // when
         when(boardRepository.findAllByTitleContainsIgnoreCase(any(), any(PageRequest.class))).thenReturn(fakeBoardPage);
-        Page<BoardDTO> result = boardService.searchWithOptions(boardDTO, PageRequest.of(0, 10));
+        Page<BoardDTO> result = boardService.search(searchDTO, PageRequest.of(0, 10));
 
         // then
         assertThat(result).isNotNull();
     }
 
     @Test
-    @DisplayName("Search with Options Test (Content)")
+    @DisplayName("Search test with content")
     void searchWithOptionsTestWithContent() {
         // given
-        BoardDTO boardDTO = BoardDTO.builder()
-                .content("content")
+        SearchDTO searchDTO = SearchDTO.builder()
+                .tag("content")
+                .keyword("content")
                 .build();
 
         // when
         when(boardRepository.findAllByContentContainsIgnoreCase(any(), any(PageRequest.class))).thenReturn(fakeBoardPage);
-        Page<BoardDTO> result = boardService.searchWithOptions(boardDTO, PageRequest.of(0, 10));
+        Page<BoardDTO> result = boardService.search(searchDTO, PageRequest.of(0, 10));
 
         // then
         assertThat(result).isNotNull();
     }
 
     @Test
-    @DisplayName("Search with Options Test (Writer)")
+    @DisplayName("Search test with writer")
     void searchWithOptionsTestWithWriter() {
         // given
-        BoardDTO boardDTO = BoardDTO.builder()
-                .writer("writer")
+        SearchDTO searchDTO = SearchDTO.builder()
+                .tag("writer")
+                .keyword("writer")
                 .build();
 
         // when
         when(boardRepository.findAllByWriterContainsIgnoreCase(any(), any(PageRequest.class))).thenReturn(fakeBoardPage);
-        Page<BoardDTO> result = boardService.searchWithOptions(boardDTO, PageRequest.of(0, 10));
-
-        // then
-        assertThat(result).isNotNull();
-    }
-
-    @Test
-    @DisplayName("Search with Options Test (Null)")
-    void searchWithOptionsTestWithNull() {
-        // given
-        BoardDTO boardDTO = mock(BoardDTO.class);
-
-        // when
-        when(boardRepository.findAll(any(PageRequest.class))).thenReturn(fakeBoardPage);
-        Page<BoardDTO> result = boardService.searchWithOptions(boardDTO, PageRequest.of(0, 10));
+        Page<BoardDTO> result = boardService.search(searchDTO, PageRequest.of(0, 10));
 
         // then
         assertThat(result).isNotNull();
