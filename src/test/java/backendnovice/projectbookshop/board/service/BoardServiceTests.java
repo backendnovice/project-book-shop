@@ -110,10 +110,10 @@ public class BoardServiceTests {
 
         // when
         when(boardRepository.save(any(Board.class))).thenReturn(board);
-        BoardDTO result = boardService.write(boardDTO);
+        long result = boardService.write(boardDTO);
 
         // then
-        assertThat(result).isNotNull();
+        assertThat(result).isGreaterThan(0);
     }
 
     @Test
@@ -128,5 +128,35 @@ public class BoardServiceTests {
 
         // then
         assertThat(result).isNotNull();
+    }
+
+    @Test
+    @DisplayName("Modify Test")
+    void modifyTest() {
+        // given
+        BoardDTO boardDTO = mock(BoardDTO.class);
+        Board board = mock(Board.class);
+
+        // when
+        when(boardRepository.findById(anyLong())).thenReturn(Optional.ofNullable(board));
+        when(boardRepository.save(any(Board.class))).thenReturn(board);
+        Long result = boardService.modify(boardDTO);
+
+        // then
+        assertThat(result).isNotNull();
+    }
+
+    @Test
+    @DisplayName("Delete Test")
+    void deleteTest() {
+        // given
+        Long id = 1L;
+
+        // when
+        doNothing().when(boardRepository).deleteById(anyLong());
+        boardService.delete(id);
+
+        // then
+        verify(boardRepository, times(1)).deleteById(id);
     }
 }
