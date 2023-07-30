@@ -8,7 +8,11 @@ import org.springframework.data.domain.Pageable;
 public interface BoardService {
     Page<BoardDTO> search(SearchDTO boardDTO, Pageable pageable);
 
-    BoardDTO write(BoardDTO boardDTO);
+    Long write(BoardDTO boardDTO);
+
+    Long modify(BoardDTO boardDTO);
+
+    void delete(Long id);
 
     BoardDTO read(Long id);
 }

@@ -36,8 +36,10 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public BoardDTO write(BoardDTO boardDTO) {
-        return convertToDTO(boardRepository.save(convertToEntity(boardDTO)));
+    public Long write(BoardDTO boardDTO) {
+        Board result = boardRepository.save(convertToEntity(boardDTO));
+
+        return result.getId();
     }
 
     @Override
@@ -45,6 +47,21 @@ public class BoardServiceImpl implements BoardService {
         Optional<Board> result = boardRepository.findById(id);
 
         return convertToDTO(result.get());
+    }
+
+    @Override
+    public Long modify(BoardDTO boardDTO) {
+        Board board = boardRepository.findById(boardDTO.getId()).get();
+        board.setTitle(boardDTO.getTitle());
+        board.setContent(boardDTO.getContent());
+        boardRepository.save(board);
+
+        return board.getId();
+    }
+
+    @Override
+    public void delete(Long id) {
+        boardRepository.deleteById(id);
     }
 
     private Page<BoardDTO> searchAll(Pageable pageable) {

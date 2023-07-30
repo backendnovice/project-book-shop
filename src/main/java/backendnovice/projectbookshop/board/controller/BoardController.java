@@ -19,6 +19,18 @@ public class BoardController {
         this.boardService = boardService;
     }
 
+    @GetMapping("/write")
+    public String getWritePage() {
+        return "board/write";
+    }
+
+    @PostMapping("/write")
+    public String writeProcess(BoardDTO boardDTO) {
+        long result = boardService.write(boardDTO);
+
+        return "redirect:/board/read?id=" + result;
+    }
+
     @GetMapping("/list")
     public String getListPage(Model model, SearchDTO searchDTO, @PageableDefault(size = 5) Pageable pageable) {
         Page<BoardDTO> result = boardService.search(searchDTO, pageable);
@@ -30,24 +42,33 @@ public class BoardController {
         return "board/list";
     }
 
-    @GetMapping("/write")
-    public String getWritePage() {
-        return "board/write";
-    }
-
-    @PostMapping("/write")
-    public String writeProcess(Model model, BoardDTO boardDTO) {
-        BoardDTO result = boardService.write(boardDTO);
-        model.addAttribute("id", result.getId());
-
-        return "board/read";
-    }
-
     @GetMapping("/read")
     public String getReadPage(Model model, @RequestParam("id") Long id) {
         BoardDTO result = boardService.read(id);
         model.addAttribute("dto", result);
 
-        return "board/list";
+        return "board/read";
+    }
+
+    @GetMapping("/modify")
+    public String getModifyPage(Model model, @RequestParam("id") Long id) {
+        BoardDTO result = boardService.read(id);
+        model.addAttribute("dto", result);
+
+        return "board/modify";
+    }
+
+    @PostMapping("/modify")
+    public String modifyProcess(BoardDTO boardDTO) {
+        long result = boardService.modify(boardDTO);
+
+        return "redirect:/board/read?id=" + result;
+    }
+
+    @PostMapping("/delete")
+    public String deleteProcess(BoardDTO boardDTO) {
+        boardService.delete(boardDTO.getId());
+
+        return "redirect:/board/list";
     }
 }

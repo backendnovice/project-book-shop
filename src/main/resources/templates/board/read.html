@@ -5,6 +5,9 @@
     <title>Title</title>
 </head>
 <body>
+<!-- hidden -->
+<input type="hidden" id="id" th:value="${dto.id}">
+
 <!-- Main -->
 <div>
     <div>
@@ -25,6 +28,7 @@
         </div>
     </div>
     <div>
+        <button type="button" id="btn-modify">글수정</button>
         <button type="button" id="btn-back">뒤로가기</button>
     </div>
 </div>
@@ -32,9 +36,23 @@
 <!-- Script -->
 <script>
     const backButton = document.getElementById('btn-back');
+    const modifyButton = document.getElementById('btn-modify');
 
     backButton.onclick = function() {
+        goBackPage();
+    }
+
+    modifyButton.onclick = function() {
+        goModifyPage();
+    }
+
+    function goBackPage() {
         window.history.back();
+    }
+
+    function goModifyPage() {
+        let id = document.getElementById('id').value;
+        location.href = "modify?id=" + encodeURI(id);
     }
 </script>
 </body>

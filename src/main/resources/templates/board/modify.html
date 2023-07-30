@@ -8,24 +8,26 @@
 <!-- Main -->
 <div>
     <div>
-        <h3>게시글 등록</h3>
+        <h3>게시물 수정</h3>
     </div>
     <div>
-        <form id="form-write" method="POST" th:action="@{~/board/write}">
+        <form id="form-modify" method="POST" th:action="@{~/board/modify}">
+            <input type="hidden" id="id" name="id" th:value="${dto.getId()}">
             <div>
                 <label for="title">제목</label>
-                <input type="text" id="title" name="title" maxlength="255" placeholder="제목을 입력해주세요">
+                <input type="text" id="title" name="title" maxlength="255" placeholder="제목을 입력해주세요" th:value="${dto.getTitle()}">
             </div>
             <div>
                 <label for="writer">작성자</label>
-                <input type="text" id="writer" name="writer" maxlength="255" placeholder="작성자를 입력해주세요">
+                <input type="text" id="writer" name="writer" maxlength="255" th:value="${dto.getWriter()}">
             </div>
             <div>
                 <label for="content">내용</label>
-                <textarea id="content" name="content" maxlength="255" placeholder="내용을 입력해주세요"></textarea>
+                <textarea id="content" name="content" maxlength="255" placeholder="내용을 입력해주세요" th:text="${dto.getContent()}"></textarea>
             </div>
             <div>
-                <button type="button" id="btn-write">글작성</button>
+                <button type="button" id="btn-modify">글수정</button>
+                <button type="button" id="btn-delete">글삭제</button>
                 <button type="button" id="btn-back">뒤로가기</button>
             </div>
         </form>
@@ -34,11 +36,22 @@
 
 <!-- Script -->
 <script>
-    const writeButton = document.getElementById('btn-write');
+    const modifyButton = document.getElementById('btn-modify');
+    const deleteButton = document.getElementById('btn-delete');
     const backButton = document.getElementById('btn-back');
 
-    writeButton.onclick = function() {
+    modifyButton.onclick = function() {
         submitForm();
+    }
+
+    deleteButton.onclick = function() {
+        let isOk = confirm("정말로 삭제하겠습니까?");
+
+        if(isOk) {
+            let form = document.getElementById('form-modify');
+            form.action = '/board/delete';
+            form.submit();
+        }
     }
 
     backButton.onclick = function() {
@@ -48,12 +61,12 @@
     function submitForm() {
         let isOk = false;
 
-        if(checkTitle() && checkContent() && checkWriter()) {
+        if(checkTitle() && checkContent()) {
             isOk = true;
         }
 
         if(isOk) {
-            let form = document.getElementById('form-write');
+            let form = document.getElementById('form-modify');
             form.submit();
         }
     }
@@ -74,17 +87,6 @@
 
         if(content === "") {
             alert("내용을 입력해 주세요.");
-            return false;
-        }
-
-        return true;
-    }
-
-    function checkWriter() {
-        let writer = document.getElementById('writer').value;
-
-        if(writer === "") {
-            alert("작성자가 비어있습니다.");
             return false;
         }
 
