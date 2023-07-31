@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<!-- Head fragment -->
+<head th:fragment="common-head">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no"
+          charset="UTF-8">
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+</head>
+<body>
+<!-- Header fragment -->
+<header th:fragment="common-header">
+    <div class="container-fluid justify-content-center align-items-center">
+        <a class="navbar-brand d-flex justify-content-center my-2" href="#">
+            <img src="/image/logo.svg" alt="Book's Pub" width="200" height="50">
+        </a>
+    </div>
+    <hr class="m-0">
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid my-1">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-items"
+                    aria-controls="navbar-items" aria-expanded="false" aria-label="toggle-nav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-center" id="navbar-items">
+                <ul class="navbar-nav" id="navbar-ul">
+                    <li class="nav-item" id="nav-item-1">
+                        <a class="nav-link" href="#">About Us</a>
+                    </li>
+                    <li class="nav-item" id="nav-item-2">
+                        <a class="nav-link" href="/board/list">Board</a>
+                    </li>
+                    <li class="nav-item" id="nav-item-3">
+                        <a class="nav-link" href="#">Trade</a>
+                    </li>
+                    <li class="nav-item" id="nav-item-4">
+                        <a class="nav-link" href="#">Login</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <hr class="m-0">
+</header>
+
+<!-- Footer fragment -->
+<footer th:fragment="common-footer">
+    <hr class="m-0">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col text-center m-5">
+                <a href="https://github.com/backendnovice/project-book-shop" target="_blank">
+                    <img src="/image/github.svg" alt="Github" width="85" height="85">
+                </a>
+                <h6 class="mt-4">Copyright © 2023 backendnovice. All rights reserved.</h6>
+            </div>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>

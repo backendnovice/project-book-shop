@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Board Test</title>
+<head th:replace="~{layout/common :: common-head}">
+    <title>Board List</title>
 </head>
 <body>
+<!-- Header -->
+<header th:replace="~{layout/common :: common-header}">
+</header>
+
+<!-- Main -->
 <div>
     <div>
         <h3>게시물 목록</h3>
@@ -78,6 +82,10 @@
         <button type="button" id="btn-write">글쓰기</button>
     </div>
 </div>
+
+<!-- Footer -->
+<footer th:replace="~{layout/common :: common-footer}">
+</footer>
 
 <!-- Script -->
 <script>

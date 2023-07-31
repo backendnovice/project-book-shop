@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+<head th:replace="~{layout/common :: common-head}">
+    <title>Board Read</title>
 </head>
 <body>
-<!-- hidden -->
-<input type="hidden" id="id" th:value="${dto.id}">
+<!-- Header -->
+<header th:replace="~{layout/common :: common-header}">
+</header>
 
 <!-- Main -->
 <div>
@@ -32,6 +32,13 @@
         <button type="button" id="btn-back">뒤로가기</button>
     </div>
 </div>
+
+<!-- hidden -->
+<input type="hidden" id="id" th:value="${dto.id}">
+
+<!-- Footer -->
+<footer th:replace="~{layout/common :: common-footer}">
+</footer>
 
 <!-- Script -->
 <script>
