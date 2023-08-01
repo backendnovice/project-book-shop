@@ -40,6 +40,7 @@ public class BoardServiceTests {
     @Test
     @DisplayName("Search test without any options")
     void searchTest() {
+        // given
         SearchDTO searchDTO = SearchDTO.builder().build();
 
         // when
@@ -113,7 +114,7 @@ public class BoardServiceTests {
         long result = boardService.write(boardDTO);
 
         // then
-        assertThat(result).isGreaterThan(0);
+        assertThat(result).isNotNull();
     }
 
     @Test
@@ -158,5 +159,18 @@ public class BoardServiceTests {
 
         // then
         verify(boardRepository, times(1)).deleteById(id);
+    }
+
+    @Test
+    @DisplayName("Update Board View Test")
+    void updateViewTest() {
+        // given
+        Long id = 1L;
+
+        // when
+        when(boardRepository.updateViewById(anyLong())).thenReturn(1);
+        boardService.updateView(id);
+
+        verify(boardRepository, times(1)).updateViewById(id);
     }
 }

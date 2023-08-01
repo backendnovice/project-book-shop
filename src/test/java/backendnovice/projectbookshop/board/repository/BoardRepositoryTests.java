@@ -125,4 +125,17 @@ public class BoardRepositoryTests {
         // then
         assertThat(result.isEmpty()).isTrue();
     }
+
+    @Test
+    @DisplayName("Update View count Test with ID")
+    void updateViewByIdTest() {
+        // given
+        Long id = 1L;
+
+        // when
+        int result = boardRepository.updateViewById(id);
+
+        // then
+        assertThat(result).isGreaterThan(0);
+    }
 }
