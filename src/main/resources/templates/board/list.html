@@ -10,7 +10,7 @@
 
 <!-- Main -->
 <div>
-    <div>
+    <div class="text-center">
         <h3>게시물 목록</h3>
     </div>
     <div>
@@ -25,13 +25,14 @@
         </form>
     </div>
     <div>
-        <table>
+        <table class="table">
             <thead>
                 <tr>
                     <th scope="col">번호</th>
-                    <th scope="col">제목</th>
-                    <th scope="col">작성자</th>
-                    <th scope="col">등록일자</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">Writer</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">View</th>
                 </tr>
             </thead>
             <tbody>
@@ -42,6 +43,7 @@
                     </td>
                     <td th:text="${data.getWriter()}"/>
                     <td th:text="${#temporals.format(data.getDate(), 'yyyy-MM-dd')}"/>
+                    <td th:text="${data.getView()}"/>
                 </tr>
             </tbody>
         </table>

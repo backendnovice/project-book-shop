@@ -20,5 +20,7 @@ public class BoardDTO {
 
     private String writer;
 
+    private int view;
+
     private LocalDateTime date;
 }

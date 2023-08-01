@@ -24,8 +24,16 @@ public class SearchDTO {
 
     public SearchDTO(Page<?> page) {
         Pageable pageable = page.getPageable();
-        this.currentPage = pageable.getPageNumber();
-        this.startPage = Math.max(0, currentPage - pageable.getPageSize() + 1);
-        this.finalPage = Math.min(currentPage + pageable.getPageSize(), page.getTotalPages() - 1);
+
+        if(pageable.isPaged()) {
+            this.currentPage = pageable.getPageNumber();
+            this.startPage = Math.max(0, currentPage - pageable.getPageSize() + 1);
+            this.finalPage = Math.min(currentPage + pageable.getPageSize(), page.getTotalPages() - 1);
+        }else {
+            this.currentPage = 0;
+            this.startPage= 0;
+            this.finalPage = 0;
+        }
+
     }
 }

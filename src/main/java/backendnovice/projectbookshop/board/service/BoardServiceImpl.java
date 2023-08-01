@@ -4,6 +4,9 @@ import backendnovice.projectbookshop.board.domain.Board;
 import backendnovice.projectbookshop.board.dto.BoardDTO;
 import backendnovice.projectbookshop.board.dto.SearchDTO;
 import backendnovice.projectbookshop.board.repository.BoardRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -60,8 +63,15 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
+    @Transactional
     public void delete(Long id) {
         boardRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public void updateView(Long id) {
+        boardRepository.updateViewById(id);
     }
 
     private Page<BoardDTO> searchAll(Pageable pageable) {
@@ -87,6 +97,7 @@ public class BoardServiceImpl implements BoardService {
                 .content(board.getContent())
                 .writer(board.getWriter())
                 .date(board.getModifiedDate())
+                .view(board.getView())
                 .build();
     }
 

@@ -24,13 +24,6 @@ public class BoardController {
         return "board/write";
     }
 
-    @PostMapping("/write")
-    public String writeProcess(BoardDTO boardDTO) {
-        long result = boardService.write(boardDTO);
-
-        return "redirect:/board/read?id=" + result;
-    }
-
     @GetMapping("/list")
     public String getListPage(Model model, SearchDTO searchDTO, @PageableDefault(size = 5) Pageable pageable) {
         Page<BoardDTO> result = boardService.search(searchDTO, pageable);
@@ -44,6 +37,7 @@ public class BoardController {
 
     @GetMapping("/read")
     public String getReadPage(Model model, @RequestParam("id") Long id) {
+        boardService.updateView(id);
         BoardDTO result = boardService.read(id);
         model.addAttribute("dto", result);
 
@@ -56,6 +50,13 @@ public class BoardController {
         model.addAttribute("dto", result);
 
         return "board/modify";
+    }
+
+    @PostMapping("/write")
+    public String writeProcess(BoardDTO boardDTO) {
+        long result = boardService.write(boardDTO);
+
+        return "redirect:/board/read?id=" + result;
     }
 
     @PostMapping("/modify")
