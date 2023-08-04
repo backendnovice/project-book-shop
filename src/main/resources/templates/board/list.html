@@ -8,80 +8,82 @@
 <header th:replace="~{layout/common :: common-header}">
 </header>
 
-<!-- Main -->
+<!-- main -->
 <div>
+    <!-- title section -->
     <div class="text-center">
-        <h3>게시물 목록</h3>
+        <h3>Board List</h3>
     </div>
-    <div>
-        <form id="form-search" method="GET" th:action="@{~/board/list}">
-            <select id="select-tag" name="tag">
-                <option value="title" selected>제목</option>
-                <option value="content">내용</option>
-                <option value="writer">작성자</option>
+    <!-- search section -->
+    <div class="container mb-3">
+        <form class="d-flex flex-row" id="form-search" method="GET" th:action="@{~/board/list}">
+            <select class="form-select w-25" id="select-tag" name="tag">
+                <option value="title" selected>Title</option>
+                <option value="content">Content</option>
+                <option value="writer">Writer</option>
             </select>
-            <input type="search" id="keyword" name="keyword">
-            <button type="button" id="btn-search">검색</button>
+            <div class="form-floating w-75">
+                <label for="keyword">Search Keyword</label>
+                <input class="form-control" type="search" id="keyword" name="keyword" placeholder="Search keyword">
+            </div>
+            <button type="button" class="btn btn-primary" id="btn-search">
+                Search
+            </button>
         </form>
     </div>
-    <div>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">번호</th>
-                    <th scope="col">Title</th>
-                    <th scope="col">Writer</th>
-                    <th scope="col">Date</th>
-                    <th scope="col">View</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="data : ${dto}">
-                    <td th:text="${data.getId()}"/>
-                    <td>
-                        <a th:text="${data.getTitle()}" th:href="@{'/board/read?id=' + ${data.getId()}}"></a>
-                    </td>
-                    <td th:text="${data.getWriter()}"/>
-                    <td th:text="${#temporals.format(data.getDate(), 'yyyy-MM-dd')}"/>
-                    <td th:text="${data.getView()}"/>
-                </tr>
-            </tbody>
-        </table>
+    <!-- list section -->
+    <div class="container mb-3">
+        <div class="bg-light shadow rounded" th:each="data : ${dto}">
+            <div class="d-flex flex-row">
+                <img src="/image/thumbnail-alt.png" style="height: 80px; width: 80px;">
+                <div class="d-flex flex-column ms-2 mt-2">
+                    <h5 class="text-dark" th:text="${data.title}"></h5>
+                    <div class="d-flex flex-row">
+                        <h6 class="text-secondary me-2" th:text="${data.writer}"></h6>
+                        <h6 class="vr me-2"></h6>
+                        <h6 class="text-secondary me-2" th:text="${#temporals.format(data.date, 'YYYY-MM-dd')}"></h6>
+                        <h6 class="vr me-2"></h6>
+                        <h6 class="text-secondary" th:text="${data.view} + ' views'"></h6>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div>
-        <ul th:with="start=${search.getStartPage()}, current=${search.getCurrentPage()}, final=${search.getFinalPage()}, tag=${search.getTag()}, keyword=${search.getKeyword()}">
+    <!-- pagination section -->
+    <div class="d-flex justify-content-center">
+        <ul class="pagination" th:with="start=${search.getStartPage()}, current=${search.getCurrentPage()}, final=${search.getFinalPage()}, tag=${search.getTag()}, keyword=${search.getKeyword()}">
             <th:block th:if="${tag == null && keyword == null}">
-                <li>
-                    <strong th:if="${start == current}">이전</strong>
-                    <a th:if="${current > start}" th:href="@{/board/list(page=${current - 1})}">이전</a>
+                <li class="page-item">
+                    <strong class="page-link disabled" th:if="${start == current}">Prev</strong>
+                    <a class="page-link" th:if="${current > start}" th:href="@{/board/list(page=${current - 1})}">Prev</a>
                 </li>
-                <li th:each="page : ${#numbers.sequence(start + 1, final + 1)}">
-                    <strong th:if="${page == current + 1}" th:text="${page}"></strong>
-                    <a th:if="${page != current + 1}" th:href="@{/board/list(page=${page - 1})}" th:text="${page}"></a>
+                <li class="page-item" th:each="page : ${#numbers.sequence(start + 1, final + 1)}">
+                    <strong class="page-link disabled" th:if="${page == current + 1}" th:text="${page}"></strong>
+                    <a class="page-link" th:if="${page != current + 1}" th:href="@{/board/list(page=${page - 1})}" th:text="${page}"></a>
                 </li>
-                <li>
-                    <strong th:if="${final == current}">다음</strong>
-                    <a th:if="${current < final}" th:href="@{/board/list(page=${current + 1})}">다음</a>
+                <li class="page-item">
+                    <strong class="page-link disabled" th:if="${final == current}">Next</strong>
+                    <a class="page-link" th:if="${current < final}" th:href="@{/board/list(page=${current + 1})}">Next</a>
                 </li>
             </th:block>
             <th:block th:unless="${tag == null && keyword == null}">
-                <li>
-                    <strong th:if="${start == current}">이전</strong>
-                    <a th:if="${current > start}" th:href="@{/board/list(page=${current - 1}, tag=${tag}, keyword=${keyword})}">이전</a>
+                <li class="page-item">
+                    <strong class="page-link disabled" th:if="${start == current}">Prev</strong>
+                    <a class="page-link" th:if="${current > start}" th:href="@{/board/list(page=${current - 1}, tag=${tag}, keyword=${keyword})}">Prev</a>
                 </li>
-                <li th:each="page : ${#numbers.sequence(start + 1, final + 1)}">
-                    <strong th:if="${page == current + 1}" th:text="${page}"></strong>
-                    <a th:if="${page != current + 1}" th:href="@{/board/list(page=${page - 1}, tag=${tag}, keyword=${keyword})}" th:text="${page}"></a>
+                <li class="page-item" th:each="page : ${#numbers.sequence(start + 1, final + 1)}">
+                    <strong class="page-link disabled" th:if="${page == current + 1}" th:text="${page}"></strong>
+                    <a class="page-link" th:if="${page != current + 1}" th:href="@{/board/list(page=${page - 1}, tag=${tag}, keyword=${keyword})}" th:text="${page}"></a>
                 </li>
-                <li>
-                    <strong th:if="${final == current}">다음</strong>
-                    <a th:if="${current < final}" th:href="@{/board/list(page=${current + 1}, tag=${tag}, keyword=${keyword})}">다음</a>
+                <li class="page-item">
+                    <strong class="page-link disabled" th:if="${final == current}">Next</strong>
+                    <a class="page-link" th:if="${current < final}" th:href="@{/board/list(page=${current + 1}, tag=${tag}, keyword=${keyword})}">다음</a>
                 </li>
             </th:block>
         </ul>
     </div>
     <div>
-        <button type="button" id="btn-write">글쓰기</button>
+        <button type="button" class="btn btn-dark btn-lg" id="btn-write">Write</button>
     </div>
 </div>
 
