@@ -1,102 +1,113 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{layout/common :: common-head}">
-    <title>Board Write</title>
+<head th:replace="~{layout/common :: common-head ('Board Read')}">
 </head>
 <body>
-<!-- Header -->
-<header th:replace="~{layout/common :: common-header}">
-</header>
+    <!-- header -->
+    <header th:replace="~{layout/common :: common-header}">
+    </header>
 
-<!-- Main -->
-<div>
-    <div>
-        <h3>게시글 등록</h3>
+    <!-- main -->
+    <div class="container">
+        <!-- title section -->
+        <div class="text-center mb-3">
+            <h3>Write Article</h3>
+        </div>
+        <!-- write form -->
+        <div class="mb-3">
+            <form class="container mb-3" id="form-write" method="POST" th:action="@{~/board/write}">
+                <div class="form-floating mb-3">
+                    <label for="title">Title</label>
+                    <input class="form-control" type="text" id="title" name="title" maxlength="255" placeholder="Title">
+                </div>
+                <div class="form-floating mb-3">
+                    <label for="writer">Writer</label>
+                    <input class="form-control" type="text" id="writer" name="writer" maxlength="255" placeholder="Writer">
+                </div>
+                <div class="mb-3">
+                    <label for="content">Content</label>
+                    <textarea class="form-control" id="content" name="content"></textarea>
+                </div>
+            </form>
+            <div class="mb-3">
+                <button class="btn btn-primary" type="button" id="btn-write">Write Post</button>
+                <button class="btn btn-dark" type="button" id="btn-back">Back</button>
+            </div>
+        </div>
     </div>
-    <div>
-        <form id="form-write" method="POST" th:action="@{~/board/write}">
-            <div>
-                <label for="title">제목</label>
-                <input type="text" id="title" name="title" maxlength="255" placeholder="제목을 입력해주세요">
-            </div>
-            <div>
-                <label for="writer">작성자</label>
-                <input type="text" id="writer" name="writer" maxlength="255" placeholder="작성자를 입력해주세요">
-            </div>
-            <div>
-                <label for="content">내용</label>
-                <textarea id="content" name="content" maxlength="255" placeholder="내용을 입력해주세요"></textarea>
-            </div>
-            <div>
-                <button type="button" id="btn-write">글작성</button>
-                <button type="button" id="btn-back">뒤로가기</button>
-            </div>
-        </form>
-    </div>
-</div>
 
-<!-- Footer -->
-<footer th:replace="~{layout/common :: common-footer}">
-</footer>
+    <!-- footer -->
+    <footer th:replace="~{layout/common :: common-footer}">
+    </footer>
 
-<!-- Script -->
-<script>
-    const writeButton = document.getElementById('btn-write');
-    const backButton = document.getElementById('btn-back');
+    <!-- page script -->
+    <script>
+        const writeButton = document.getElementById('btn-write');
+        const backButton = document.getElementById('btn-back');
+        let editor;
 
-    writeButton.onclick = function() {
-        submitForm();
-    }
+        ClassicEditor
+            .create(document.querySelector("#content"))
+            .then(newEditor => {
+                editor = newEditor;
+            })
+            .catch(error => {
+                console.log(error);
+            });
 
-    backButton.onclick = function() {
-        window.history.back();
-    }
-
-    function submitForm() {
-        let isOk = false;
-
-        if(checkTitle() && checkContent() && checkWriter()) {
-            isOk = true;
+        writeButton.onclick = function() {
+            submitForm();
         }
 
-        if(isOk) {
-            let form = document.getElementById('form-write');
-            form.submit();
-        }
-    }
-
-    function checkTitle() {
-        let title = document.getElementById('title').value;
-
-        if(title === "") {
-            alert("제목을 입력해 주세요.");
-            return false;
+        backButton.onclick = function() {
+            window.history.back();
         }
 
-        return true;
-    }
+        function submitForm() {
+            let isOk = false;
 
-    function checkContent() {
-        let content = document.getElementById('content').value;
+            if(checkTitle() && checkContent() && checkWriter()) {
+                isOk = true;
+            }
 
-        if(content === "") {
-            alert("내용을 입력해 주세요.");
-            return false;
+            if(isOk) {
+                let form = document.getElementById('form-write');
+                form.submit();
+            }
         }
 
-        return true;
-    }
+        function checkTitle() {
+            const title = document.getElementById('title').value;
 
-    function checkWriter() {
-        let writer = document.getElementById('writer').value;
+            if(title === "") {
+                alert("Please enter the post title.");
+                return false;
+            }
 
-        if(writer === "") {
-            alert("작성자가 비어있습니다.");
-            return false;
+            return true;
         }
 
-        return true;
-    }
-</script>
+        function checkContent() {
+            const content = editor.getData();
+
+            if(content === "") {
+                alert("Please enter the post content.");
+                return false;
+            }
+
+            return true;
+        }
+
+        function checkWriter() {
+            const writer = document.getElementById('writer').value;
+
+            if(writer === "") {
+                alert("Please enter the post writer.");
+                return false;
+            }
+
+            return true;
+        }
+    </script>
 </body>
 </html>

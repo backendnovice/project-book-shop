@@ -1,41 +1,40 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{layout/common :: common-head}">
-    <title>Board Read</title>
+<head th:replace="~{layout/common :: common-head ('Board Read')}">
 </head>
 <body>
-<!-- Header -->
-<header th:replace="~{layout/common :: common-header}">
-</header>
+    <!-- Header -->
+    <header th:replace="~{layout/common :: common-header}">
+    </header>
 
-<!-- Main -->
-<div>
-    <div>
-        <h3>게시물 조회</h3>
+    <!-- main -->
+    <div class="container">
+        <!-- title section -->
+        <div class="text-center mb-3">
+            <h3>Board Read</h3>
+        </div>
+        <!-- read form -->
+        <div class="mb-3">
+            <div class="form-floating mb-3">
+                <label for="title">Title</label>
+                <input class="form-control" type="text" id="title" th:value="${dto.title}" readonly>
+            </div>
+            <div class="form-floating mb-3">
+                <label for="writer">Author</label>
+                <input class="form-control" type="text" id="writer" th:value="${dto.writer}" readonly>
+            </div>
+            <div class="form-floating mb-3">
+                <label for="view">Views</label>
+                <input class="form-control" type="text" id="view" th:value="${dto.view}" readonly>
+            </div>
+            <div class="mb-3" th:utext="${dto.content}">
+            </div>
+        </div>
+        <div>
+            <button class="btn btn-primary" type="button" id="btn-modify">Modify</button>
+            <button class="btn btn-dark" type="button" id="btn-back">Go Back</button>
+        </div>
     </div>
-    <div>
-        <div>
-            <label for="title">제목</label>
-            <input type="text" id="title" th:value="${dto.title}" readonly>
-        </div>
-        <div>
-            <label for="writer">작성자</label>
-            <input type="text" id="writer" th:value="${dto.writer}" readonly>
-        </div>
-        <div>
-            <label for="content">내용</label>
-            <textarea id="content" th:text="${dto.content}" readonly></textarea>
-        </div>
-        <div>
-            <label for="view">조회수</label>
-            <input type="text" id="view" th:value="${dto.view}" readonly>
-        </div>
-    </div>
-    <div>
-        <button type="button" id="btn-modify">글수정</button>
-        <button type="button" id="btn-back">뒤로가기</button>
-    </div>
-</div>
 
 <!-- hidden -->
 <input type="hidden" id="id" th:value="${dto.id}">

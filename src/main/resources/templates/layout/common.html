@@ -1,12 +1,21 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <!-- Head fragment -->
-<head th:fragment="common-head">
+<head th:fragment="common-head (title)">
     <meta name="viewport"
           content="width=device-width, initial-scale=1, shrink-to-fit=no"
           charset="UTF-8">
+    <title th:text="${title}"></title>
+    <!-- Bootstrap -->
     <script th:src="@{/js/bootstrap.min.js}"></script>
     <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <!-- CKEditor 5 -->
+    <script th:src="@{/js/ckeditor.js}"></script>
+    <style>
+        .ck-editor__editable_inline {
+            min-height: 400px;
+        }
+    </style>
 </head>
 <body>
 <!-- Header fragment -->

@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{layout/common :: common-head}">
-    <title>Board List</title>
+<head th:replace="~{layout/common :: common-head ('Board List')}">
 </head>
 <body>
 <!-- Header -->
@@ -34,9 +33,9 @@
     <!-- list section -->
     <div class="container mb-3">
         <div class="bg-light shadow rounded" th:each="data : ${dto}">
-            <div class="d-flex flex-row">
-                <img src="/image/thumbnail-alt.png" style="height: 80px; width: 80px;">
-                <div class="d-flex flex-column ms-2 mt-2">
+            <div class="d-flex flex-row mb-3">
+                <img class="p-1" src="/image/thumbnail-alt.png" style="height: 80px; width: 80px;">
+                <div class="d-flex flex-column ms-2 mt-2" th:onclick="|location.href='@{/board/read(id=${data.id})}'|">
                     <h5 class="text-dark" th:text="${data.title}"></h5>
                     <div class="d-flex flex-row">
                         <h6 class="text-secondary me-2" th:text="${data.writer}"></h6>
@@ -82,6 +81,7 @@
             </th:block>
         </ul>
     </div>
+    <!-- button section -->
     <div>
         <button type="button" class="btn btn-dark btn-lg" id="btn-write">Write</button>
     </div>
