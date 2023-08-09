@@ -16,16 +16,16 @@
         <!-- read form -->
         <div class="mb-3">
             <div class="form-floating mb-3">
-                <label for="title">Title</label>
                 <input class="form-control" type="text" id="title" th:value="${dto.title}" readonly>
+                <label for="title">Title</label>
             </div>
             <div class="form-floating mb-3">
-                <label for="writer">Author</label>
                 <input class="form-control" type="text" id="writer" th:value="${dto.writer}" readonly>
+                <label for="writer">Author</label>
             </div>
             <div class="form-floating mb-3">
-                <label for="view">Views</label>
                 <input class="form-control" type="text" id="view" th:value="${dto.view}" readonly>
+                <label for="view">Views</label>
             </div>
             <div class="mb-3" th:utext="${dto.content}">
             </div>

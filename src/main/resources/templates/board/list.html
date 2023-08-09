@@ -35,7 +35,7 @@
         <div class="bg-light shadow rounded" th:each="data : ${dto}">
             <div class="d-flex flex-row mb-3">
                 <img class="p-1" src="/image/thumbnail-alt.png" style="height: 80px; width: 80px;">
-                <div class="d-flex flex-column ms-2 mt-2" th:onclick="|location.href='@{/board/read(id=${data.id})}'|">
+                <div class="d-flex flex-column ms-2 mt-2" th:onclick="|location.href='@{/board/read(id=${data.id})}'|" style="cursor: pointer;">
                     <h5 class="text-dark" th:text="${data.title}"></h5>
                     <div class="d-flex flex-row">
                         <h6 class="text-secondary me-2" th:text="${data.writer}"></h6>
@@ -87,11 +87,11 @@
     </div>
 </div>
 
-<!-- Footer -->
+<!-- footer -->
 <footer th:replace="~{layout/common :: common-footer}">
 </footer>
 
-<!-- Script -->
+<!-- script -->
 <script>
     const searchButton = document.getElementById('btn-search');
     const writeButton = document.getElementById('btn-write');
