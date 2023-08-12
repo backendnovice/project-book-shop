@@ -27,10 +27,10 @@
                 <input class="form-control" type="text" id="view" th:value="${dto.view}" readonly>
                 <label for="view">Views</label>
             </div>
-            <div class="mb-3" th:utext="${dto.content}">
+            <div class="mb-3" th:utext="${dto.content}" style="min-height: 400px;">
             </div>
         </div>
-        <div>
+        <div class="mb-3">
             <button class="btn btn-primary" type="button" id="btn-modify">Modify</button>
             <button class="btn btn-dark" type="button" id="btn-back">Go Back</button>
         </div>

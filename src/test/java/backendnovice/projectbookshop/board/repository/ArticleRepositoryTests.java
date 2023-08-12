@@ -1,6 +1,7 @@
 package backendnovice.projectbookshop.board.repository;
 
-import backendnovice.projectbookshop.board.domain.Board;
+import backendnovice.projectbookshop.board.article.domain.Article;
+import backendnovice.projectbookshop.board.article.repository.ArticleRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -14,26 +15,26 @@ import static org.assertj.core.api.Assertions.*;
 
 @DataJpaTest                                    // Load jpa related settings, include in memory db, transactional.
 @TestInstance(TestInstance.Lifecycle.PER_CLASS) // Change lifecycle per class. to use @BeforeAll, @AfterAll correctly.
-public class BoardRepositoryTests {
+public class ArticleRepositoryTests {
     @Autowired
-    private BoardRepository boardRepository;
+    private ArticleRepository articleRepository;
 
     @BeforeAll
     void initializeBeforeAllTests() {
         IntStream.rangeClosed(1, 50).forEach(i -> {
-            Board board = Board.builder()
+            Article article = Article.builder()
                     .title("Title #" + i)
                     .content("Content #" + i)
                     .writer("Writer")
                     .build();
 
-            boardRepository.save(board);
+            articleRepository.save(article);
         });
     }
 
     @AfterAll
     void finalizeAfterAllTests() {
-        boardRepository.deleteAll();
+        articleRepository.deleteAll();
     }
 
     @Test
@@ -44,7 +45,7 @@ public class BoardRepositoryTests {
         String title = "title";
 
         // when
-        Page<Board> result = boardRepository.findAllByTitleContainsIgnoreCase(title, pageable);
+        Page<Article> result = articleRepository.findAllByTitleContainsIgnoreCase(title, pageable);
 
         // then
         assertThat(result.isEmpty()).isFalse();
@@ -60,7 +61,7 @@ public class BoardRepositoryTests {
         String title = "wrong";
 
         // when
-        Page<Board> result = boardRepository.findAllByTitleContainsIgnoreCase(title, pageable);
+        Page<Article> result = articleRepository.findAllByTitleContainsIgnoreCase(title, pageable);
 
         // then
         assertThat(result.isEmpty()).isTrue();
@@ -74,7 +75,7 @@ public class BoardRepositoryTests {
         String content = "content";
 
         // when
-        Page<Board> result = boardRepository.findAllByContentContainsIgnoreCase(content, pageable);
+        Page<Article> result = articleRepository.findAllByContentContainsIgnoreCase(content, pageable);
 
         // then
         assertThat(result.isEmpty()).isFalse();
@@ -90,7 +91,7 @@ public class BoardRepositoryTests {
         String content = "wrong";
 
         // when
-        Page<Board> result = boardRepository.findAllByContentContainsIgnoreCase(content, pageable);
+        Page<Article> result = articleRepository.findAllByContentContainsIgnoreCase(content, pageable);
 
         // then
         assertThat(result.isEmpty()).isTrue();
@@ -104,7 +105,7 @@ public class BoardRepositoryTests {
         String writer = "writer";
 
         // when
-        Page<Board> result = boardRepository.findAllByWriterContainsIgnoreCase(writer, pageable);
+        Page<Article> result = articleRepository.findAllByWriterContainsIgnoreCase(writer, pageable);
 
         // then
         assertThat(result.isEmpty()).isFalse();
@@ -120,7 +121,7 @@ public class BoardRepositoryTests {
         String writer = "wrong";
 
         // when
-        Page<Board> result = boardRepository.findAllByWriterContainsIgnoreCase(writer, pageable);
+        Page<Article> result = articleRepository.findAllByWriterContainsIgnoreCase(writer, pageable);
 
         // then
         assertThat(result.isEmpty()).isTrue();
@@ -133,7 +134,7 @@ public class BoardRepositoryTests {
         Long id = 1L;
 
         // when
-        int result = boardRepository.updateViewById(id);
+        int result = articleRepository.updateViewById(id);
 
         // then
         assertThat(result).isGreaterThan(0);

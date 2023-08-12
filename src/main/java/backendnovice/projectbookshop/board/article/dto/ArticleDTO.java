@@ -1,4 +1,4 @@
-package backendnovice.projectbookshop.board.dto;
+package backendnovice.projectbookshop.board.article.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BoardDTO {
+public class ArticleDTO {
     private Long id;
 
     private String title;
@@ -20,7 +20,7 @@ public class BoardDTO {
 
     private String writer;
 
-    private int view;
+    private int views;
 
     private LocalDateTime date;
 }

@@ -1,8 +1,9 @@
 package backendnovice.projectbookshop.board.controller;
 
-import backendnovice.projectbookshop.board.dto.BoardDTO;
-import backendnovice.projectbookshop.board.dto.SearchDTO;
-import backendnovice.projectbookshop.board.service.BoardService;
+import backendnovice.projectbookshop.board.article.controller.ArticleController;
+import backendnovice.projectbookshop.board.article.dto.ArticleDTO;
+import backendnovice.projectbookshop.global.dto.SearchDTO;
+import backendnovice.projectbookshop.board.article.service.ArticleService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,32 +26,32 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(BoardController.class)
+@WebMvcTest(ArticleController.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @MockBean(JpaMetamodelMappingContext.class) // Solving an issue with jpa auditing.
-public class BoardControllerTests {
+public class ArticleControllerTests {
     @MockBean
-    private BoardService boardService;
+    private ArticleService articleService;
 
     @Autowired
     private MockMvc mockMvc;
 
-    private Page<BoardDTO> fakePage;
+    private Page<ArticleDTO> fakePage;
 
     @BeforeAll
     void initialize() {
-        List<BoardDTO> boardDTOs = new ArrayList<>();
+        List<ArticleDTO> articleDTOS = new ArrayList<>();
         for(int i = 1; i <= 5; i++) {
-            BoardDTO boardDTO = BoardDTO.builder()
+            ArticleDTO articleDTO = ArticleDTO.builder()
                     .id((long) i)
                     .title("title #" + i)
                     .content("content #" + i)
                     .writer("writer #" + i)
                     .build();
-            boardDTOs.add(boardDTO);
+            articleDTOS.add(articleDTO);
         }
         Pageable pageable = PageRequest.of(0, 10);
-        fakePage = new PageImpl<>(boardDTOs, pageable, boardDTOs.size());
+        fakePage = new PageImpl<>(articleDTOS, pageable, articleDTOS.size());
     }
 
     @Test
@@ -66,7 +67,7 @@ public class BoardControllerTests {
     void getReadPageTest() throws Exception {
         // given
         Long id = 1L;
-        BoardDTO boardDTO = BoardDTO.builder()
+        ArticleDTO articleDTO = ArticleDTO.builder()
                 .id(id)
                 .title("title")
                 .content("content")
@@ -74,15 +75,15 @@ public class BoardControllerTests {
                 .build();
 
         // when
-        when(boardService.read(anyLong())).thenReturn(boardDTO);
+        when(articleService.read(anyLong())).thenReturn(articleDTO);
 
         // then
         mockMvc.perform(get("/board/read")
-                .param("id", String.valueOf(boardDTO.getId())))
+                .param("id", String.valueOf(articleDTO.getId())))
                 .andExpect(status().isOk())
                 .andExpect(view().name("board/read"))
                 .andExpect(model().attributeExists("dto"))
-                .andExpect(model().attribute("dto", boardDTO));
+                .andExpect(model().attribute("dto", articleDTO));
     }
 
     @Test
@@ -90,7 +91,7 @@ public class BoardControllerTests {
     void getModifyPageTest() throws Exception {
         // given
         Long id = 1L;
-        BoardDTO boardDTO = BoardDTO.builder()
+        ArticleDTO articleDTO = ArticleDTO.builder()
                 .id(id)
                 .title("title")
                 .content("content")
@@ -98,15 +99,15 @@ public class BoardControllerTests {
                 .build();
 
         // when
-        when(boardService.read(anyLong())).thenReturn(boardDTO);
+        when(articleService.read(anyLong())).thenReturn(articleDTO);
 
         // then
         mockMvc.perform(get("/board/modify")
-                .param("id", String.valueOf(boardDTO.getId())))
+                .param("id", String.valueOf(articleDTO.getId())))
                 .andExpect(status().isOk())
                 .andExpect(view().name("board/modify"))
                 .andExpect(model().attributeExists("dto"))
-                .andExpect(model().attribute("dto", boardDTO));
+                .andExpect(model().attribute("dto", articleDTO));
     }
 
     @Test
@@ -116,7 +117,7 @@ public class BoardControllerTests {
         SearchDTO searchDTO = new SearchDTO(fakePage);
 
         // when
-        when(boardService.search(any(SearchDTO.class), any(Pageable.class))).thenReturn(fakePage);
+        when(articleService.search(any(SearchDTO.class), any(Pageable.class))).thenReturn(fakePage);
 
         // then
         mockMvc.perform(get("/board/list")
@@ -135,20 +136,20 @@ public class BoardControllerTests {
     void writeProcessTest() throws Exception {
         // given
         Long id = 1L;
-        BoardDTO boardDTO = BoardDTO.builder()
+        ArticleDTO articleDTO = ArticleDTO.builder()
                 .title("title")
                 .content("content")
                 .writer("writer")
                 .build();
 
         // when
-        when(boardService.write(any(BoardDTO.class))).thenReturn(id);
+        when(articleService.write(any(ArticleDTO.class))).thenReturn(id);
 
         // then
         mockMvc.perform(post("/board/write")
-                .param("title", boardDTO.getTitle())
-                .param("content", boardDTO.getContent())
-                .param("writer", boardDTO.getWriter()))
+                .param("title", articleDTO.getTitle())
+                .param("content", articleDTO.getContent())
+                .param("writer", articleDTO.getWriter()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/board/read?id=" + id));
     }
@@ -158,18 +159,18 @@ public class BoardControllerTests {
     void modifyProcessTest() throws Exception {
         // given
         Long id = 1L;
-        BoardDTO boardDTO = BoardDTO.builder()
+        ArticleDTO articleDTO = ArticleDTO.builder()
                 .title("modify title")
                 .content("modify content")
                 .build();
 
         // when
-        when(boardService.modify(any(BoardDTO.class))).thenReturn(id);
+        when(articleService.modify(any(ArticleDTO.class))).thenReturn(id);
 
         // then
         mockMvc.perform(post("/board/modify")
-                .param("title", boardDTO.getTitle())
-                .param("content", boardDTO.getContent()))
+                .param("title", articleDTO.getTitle())
+                .param("content", articleDTO.getContent()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/board/read?id=" + id));
     }
@@ -181,7 +182,7 @@ public class BoardControllerTests {
         Long id = 1L;
 
         // when
-        doNothing().when(boardService).delete(id);
+        doNothing().when(articleService).delete(id);
 
         // then
         mockMvc.perform(post("/board/delete")

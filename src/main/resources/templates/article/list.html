@@ -8,22 +8,22 @@
 </header>
 
 <!-- main -->
-<div>
+<div class="container">
     <!-- title section -->
     <div class="text-center">
         <h3>Board List</h3>
     </div>
     <!-- search section -->
     <div class="container mb-3">
-        <form class="d-flex flex-row" id="form-search" method="GET" th:action="@{~/board/list}">
+        <form class="d-flex flex-row" id="form-search" method="GET" th:action="@{~/article/list}">
             <select class="form-select w-25" id="select-tag" name="tag">
                 <option value="title" selected>Title</option>
                 <option value="content">Content</option>
                 <option value="writer">Writer</option>
             </select>
             <div class="form-floating w-75">
-                <label for="keyword">Search Keyword</label>
                 <input class="form-control" type="search" id="keyword" name="keyword" placeholder="Search keyword">
+                <label for="keyword">Search Keyword</label>
             </div>
             <button type="button" class="btn btn-primary" id="btn-search">
                 Search
@@ -35,7 +35,7 @@
         <div class="bg-light shadow rounded" th:each="data : ${dto}">
             <div class="d-flex flex-row mb-3">
                 <img class="p-1" src="/image/thumbnail-alt.png" style="height: 80px; width: 80px;">
-                <div class="d-flex flex-column ms-2 mt-2" th:onclick="|location.href='@{/board/read(id=${data.id})}'|" style="cursor: pointer;">
+                <div class="d-flex flex-column ms-2 mt-2" th:onclick="|location.href='@{/article/read(id=${data.id})}'|" style="cursor: pointer;">
                     <h5 class="text-dark" th:text="${data.title}"></h5>
                     <div class="d-flex flex-row">
                         <h6 class="text-secondary me-2" th:text="${data.writer}"></h6>
@@ -43,6 +43,8 @@
                         <h6 class="text-secondary me-2" th:text="${#temporals.format(data.date, 'YYYY-MM-dd')}"></h6>
                         <h6 class="vr me-2"></h6>
                         <h6 class="text-secondary" th:text="${data.view} + ' views'"></h6>
+                        <h6 class="vr me-2"></h6>
+                        <h6 class="text-secondary" th:text="${data.likes} + ' likes'"></h6>
                     </div>
                 </div>
             </div>
@@ -54,36 +56,36 @@
             <th:block th:if="${tag == null && keyword == null}">
                 <li class="page-item">
                     <strong class="page-link disabled" th:if="${start == current}">Prev</strong>
-                    <a class="page-link" th:if="${current > start}" th:href="@{/board/list(page=${current - 1})}">Prev</a>
+                    <a class="page-link" th:if="${current > start}" th:href="@{/article/list(page=${current - 1})}">Prev</a>
                 </li>
                 <li class="page-item" th:each="page : ${#numbers.sequence(start + 1, final + 1)}">
                     <strong class="page-link disabled" th:if="${page == current + 1}" th:text="${page}"></strong>
-                    <a class="page-link" th:if="${page != current + 1}" th:href="@{/board/list(page=${page - 1})}" th:text="${page}"></a>
+                    <a class="page-link" th:if="${page != current + 1}" th:href="@{/article/list(page=${page - 1})}" th:text="${page}"></a>
                 </li>
                 <li class="page-item">
                     <strong class="page-link disabled" th:if="${final == current}">Next</strong>
-                    <a class="page-link" th:if="${current < final}" th:href="@{/board/list(page=${current + 1})}">Next</a>
+                    <a class="page-link" th:if="${current < final}" th:href="@{/article/list(page=${current + 1})}">Next</a>
                 </li>
             </th:block>
             <th:block th:unless="${tag == null && keyword == null}">
                 <li class="page-item">
                     <strong class="page-link disabled" th:if="${start == current}">Prev</strong>
-                    <a class="page-link" th:if="${current > start}" th:href="@{/board/list(page=${current - 1}, tag=${tag}, keyword=${keyword})}">Prev</a>
+                    <a class="page-link" th:if="${current > start}" th:href="@{/article/list(page=${current - 1}, tag=${tag}, keyword=${keyword})}">Prev</a>
                 </li>
                 <li class="page-item" th:each="page : ${#numbers.sequence(start + 1, final + 1)}">
                     <strong class="page-link disabled" th:if="${page == current + 1}" th:text="${page}"></strong>
-                    <a class="page-link" th:if="${page != current + 1}" th:href="@{/board/list(page=${page - 1}, tag=${tag}, keyword=${keyword})}" th:text="${page}"></a>
+                    <a class="page-link" th:if="${page != current + 1}" th:href="@{/article/list(page=${page - 1}, tag=${tag}, keyword=${keyword})}" th:text="${page}"></a>
                 </li>
                 <li class="page-item">
                     <strong class="page-link disabled" th:if="${final == current}">Next</strong>
-                    <a class="page-link" th:if="${current < final}" th:href="@{/board/list(page=${current + 1}, tag=${tag}, keyword=${keyword})}">다음</a>
+                    <a class="page-link" th:if="${current < final}" th:href="@{/article/list(page=${current + 1}, tag=${tag}, keyword=${keyword})}">다음</a>
                 </li>
             </th:block>
         </ul>
     </div>
     <!-- button section -->
     <div>
-        <button type="button" class="btn btn-dark btn-lg" id="btn-write">Write</button>
+        <button type="button" class="btn btn-primary" id="btn-write">Write</button>
     </div>
 </div>
 
@@ -97,7 +99,7 @@
     const writeButton = document.getElementById('btn-write');
 
     writeButton.onclick = function() {
-        location.href = "/board/write";
+        location.href = "/article/write";
     }
 
     searchButton.onclick = function() {

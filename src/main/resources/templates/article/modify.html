@@ -15,7 +15,7 @@
         </div>
         <!-- modify section -->
         <div class="mb-3">
-            <form class="container mb-3" id="form-modify" method="POST" th:action="@{~/board/modify}">
+            <form class="container mb-3" id="form-modify" method="POST" th:action="@{~/article/modify}">
                 <input type="hidden" id="id" name="id" th:value="${dto.getId()}">
                 <div class="form-floating mb-3">
                     <input class="form-control" type="text" id="title" name="title" maxlength="255" placeholder="Title" th:value="${dto.title}">
@@ -66,7 +66,7 @@
 
         if(isOk) {
             let form = document.getElementById('form-modify');
-            form.action = '/board/delete';
+            form.action = '/article/delete';
             form.submit();
         }
     }

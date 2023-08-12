@@ -1,4 +1,4 @@
-package backendnovice.projectbookshop.board.dto;
+package backendnovice.projectbookshop.global.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
