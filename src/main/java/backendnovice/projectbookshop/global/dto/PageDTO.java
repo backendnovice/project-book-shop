@@ -1,3 +1,14 @@
+/**
+ * @author    : backendnovice@gmail.com
+ * @date      : 2023-08-16
+ * @desc      : An page-related data transfer object class. that used to books and articles.
+ * @changelog :
+ * 2023-07-29 - backendnovice@gmail.com - create new file.
+ * 2023-08-01 - backendnovice@gmail.com - add constructor paged condition check.
+ * 2023-08-16 - backendnovice@gmail.com - add description annotation.
+ *                                      - change filename to PageDTO.
+ */
+
 package backendnovice.projectbookshop.global.dto;
 
 import lombok.AllArgsConstructor;
@@ -11,7 +22,7 @@ import org.springframework.data.domain.Pageable;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SearchDTO {
+public class PageDTO {
     private String tag;
 
     private String keyword;
@@ -22,7 +33,7 @@ public class SearchDTO {
 
     private int finalPage;
 
-    public SearchDTO(Page<?> page) {
+    public PageDTO(Page<?> page) {
         Pageable pageable = page.getPageable();
 
         if(pageable.isPaged()) {
@@ -34,6 +45,7 @@ public class SearchDTO {
             this.startPage= 0;
             this.finalPage = 0;
         }
-
     }
+
+
 }

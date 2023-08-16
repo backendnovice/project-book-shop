@@ -1,3 +1,16 @@
+/**
+ * @author    : backendnovice@gmail.com
+ * @date      : 2023-08-16
+ * @desc      : An article-related entity class. that manage columns for Article table.
+ * @changelog :
+ * 2023-07-25 - backendnovice@gmail.com - create new file.
+ * 2023-07-30 - backendnovice@gmail.com - add setter annotation.
+ * 2023-08-01 - backendnovice@gmail.com - add column annotation.
+ *                                      - change setter annotation to method.
+ * 2023-08-13 - backendnovice@gmail.com - change filename to Article.
+ * 2023-08-16 - backendnovice@gmail.com - add description annotation.
+ */
+
 package backendnovice.projectbookshop.board.article.domain;
 
 import backendnovice.projectbookshop.global.domain.Time;
@@ -5,9 +18,6 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
