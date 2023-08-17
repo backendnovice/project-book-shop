@@ -1,8 +1,18 @@
+/**
+ * @author    : backendnovice@gmail.com
+ * @date      : 2023-08-17
+ * @desc      : ArticleController test class.
+ * @changelog :
+ * 2023-08-01 - backendnovice@gmail.com - create new file.
+ * 2023-08-13 - backendnovice@gmail.com - change filename to ArticleControllerTests.
+ * 2023-08-17 - backendnovice@gmail.com - add description annotation.
+ */
+
 package backendnovice.projectbookshop.board.controller;
 
 import backendnovice.projectbookshop.board.article.controller.ArticleController;
 import backendnovice.projectbookshop.board.article.dto.ArticleDTO;
-import backendnovice.projectbookshop.global.dto.SearchDTO;
+import backendnovice.projectbookshop.global.dto.PageDTO;
 import backendnovice.projectbookshop.board.article.service.ArticleService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -36,12 +46,15 @@ public class ArticleControllerTests {
     @Autowired
     private MockMvc mockMvc;
 
-    private Page<ArticleDTO> fakePage;
+    private Page<ArticleDTO> fakeArticles;
 
+    /**
+     * Initialize before all tests. initialize "fakeArticles" with 10 fake article.
+     */
     @BeforeAll
     void initialize() {
         List<ArticleDTO> articleDTOS = new ArrayList<>();
-        for(int i = 1; i <= 5; i++) {
+        for(int i = 1; i <= 10; i++) {
             ArticleDTO articleDTO = ArticleDTO.builder()
                     .id((long) i)
                     .title("title #" + i)
@@ -51,9 +64,14 @@ public class ArticleControllerTests {
             articleDTOS.add(articleDTO);
         }
         Pageable pageable = PageRequest.of(0, 10);
-        fakePage = new PageImpl<>(articleDTOS, pageable, articleDTOS.size());
+        fakeArticles = new PageImpl<>(articleDTOS, pageable, articleDTOS.size());
     }
 
+    /**
+     * Test GET request for article write page.
+     * @throws Exception
+     *      Throwable exception when using mockMvc.preform().
+     */
     @Test
     @DisplayName("Write Page Test (GET)")
     void getWritePageTest() throws Exception {
@@ -62,6 +80,11 @@ public class ArticleControllerTests {
                 .andExpect(view().name("board/write"));
     }
 
+    /**
+     * Test GET request for article read page with mock id.
+     * @throws Exception
+     *      Throwable exception when using mockMvc.perform().
+     */
     @Test
     @DisplayName("Read Page Test (GET)")
     void getReadPageTest() throws Exception {
@@ -86,6 +109,11 @@ public class ArticleControllerTests {
                 .andExpect(model().attribute("dto", articleDTO));
     }
 
+    /**
+     * Test GET request for modify page with mock id.
+     * @throws Exception
+     *      Throwable exception when using mockMvc.perform().
+     */
     @Test
     @DisplayName("Modify Page Test (GET)")
     void getModifyPageTest() throws Exception {
@@ -110,27 +138,37 @@ public class ArticleControllerTests {
                 .andExpect(model().attribute("dto", articleDTO));
     }
 
+    /**
+     * Test GET request for list page with mock articles.
+     * @throws Exception
+     *      Throwable exception when using mockMvc.perform().
+     */
     @Test
     @DisplayName("List Page Test (GET)")
     void getListPageTest() throws Exception {
         // given
-        SearchDTO searchDTO = new SearchDTO(fakePage);
+        PageDTO pageDTO = new PageDTO(fakeArticles);
 
         // when
-        when(articleService.search(any(SearchDTO.class), any(Pageable.class))).thenReturn(fakePage);
+        when(articleService.search(any(PageDTO.class), any(Pageable.class))).thenReturn(fakeArticles);
 
         // then
         mockMvc.perform(get("/board/list")
-                .param("tag", searchDTO.getTag())
-                .param("keyword", searchDTO.getKeyword()))
+                .param("tag", pageDTO.getTag())
+                .param("keyword", pageDTO.getKeyword()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("board/list"))
                 .andExpect(model().attributeExists("dto"))
-                .andExpect(model().attribute("dto", fakePage))
+                .andExpect(model().attribute("dto", fakeArticles))
                 .andExpect(model().attributeExists("search"))
-                .andExpect(model().attribute("search", searchDTO));
+                .andExpect(model().attribute("search", pageDTO));
     }
 
+    /**
+     * Test POST request for write article process.
+     * @throws Exception
+     *      Throwable exception when using mockMvc.perform().
+     */
     @Test
     @DisplayName("Write Process Test (POST)")
     void writeProcessTest() throws Exception {
@@ -154,6 +192,11 @@ public class ArticleControllerTests {
                 .andExpect(view().name("redirect:/board/read?id=" + id));
     }
 
+    /**
+     * Test POST request for modify article process.
+     * @throws Exception
+     *      Throwable exception when using mockMvc.perform().
+     */
     @Test
     @DisplayName("Modify Process Test (POST)")
     void modifyProcessTest() throws Exception {
@@ -175,6 +218,11 @@ public class ArticleControllerTests {
                 .andExpect(view().name("redirect:/board/read?id=" + id));
     }
 
+    /**
+     * Test POST request for delete article process.
+     * @throws Exception
+     *      Throwable exception when using mockMvc.perform().
+     */
     @Test
     @DisplayName("Delete Process Test (POST)")
     void deleteProcessTest() throws Exception {
