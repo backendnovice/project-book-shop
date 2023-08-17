@@ -1,6 +1,6 @@
 /**
  * @author    : backendnovice@gmail.com
- * @date      : 2023-08-16
+ * @date      : 2023-08-17
  * @desc      : An article-related service implementation class. that actually implement business logic for article.
  * @changelog :
  * 2023-07-25 - backendnovice@gmail.com - create new file.
@@ -11,6 +11,7 @@
  * 2023-08-13 - backendnovice@gmail.com - change filename to ArticleServiceImpl.
  *                                      - add prevent double hit cookie method.
  * 2023-08-16 - backendnovice@gmail.com - add description annotation.
+ * 2023-08-17 - backendnovice@gmail.com - add exception handling.
  */
 
 package backendnovice.projectbookshop.board.article.service;
@@ -23,13 +24,14 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 
 @Service
 public class ArticleServiceImpl implements ArticleService {
@@ -48,22 +50,35 @@ public class ArticleServiceImpl implements ArticleService {
      *      Pageable object.
      * @return
      *      Page object that include found articles.
+     * @exception IllegalArgumentException
+     *      Throwable exception when incorrect search tag detected.
+     * @exception NoSuchElementException
+     *      Throwable exception when cannot found any articles.
      */
     @Override
     public Page<ArticleDTO> search(PageDTO pageDTO, Pageable pageable) {
-        if(pageDTO.getTag() != null || pageDTO.getKeyword() != null) {
-            if(pageDTO.getTag().equals("title")) {
-                return searchWithTitle(pageDTO.getKeyword(), pageable);
-            }
-            if(pageDTO.getTag().equals("content")) {
-                return searchWithContent(pageDTO.getKeyword(), pageable);
-            }
-            if(pageDTO.getTag().equals("writer")) {
-                return searchWithWriter(pageDTO.getKeyword(), pageable);
-            }
+        String tag = pageDTO.getTag();
+        String keyword = pageDTO.getKeyword();
+        Page<ArticleDTO> result;
+
+        if(tag == null && keyword == null) {
+            return searchAll(pageable);
         }
 
-        return searchAll(pageable);
+        if(tag.equals("title")) {
+            result = searchWithTitle(keyword, pageable);
+        }else if(tag.equals("content")) {
+            result = searchWithContent(keyword, pageable);
+        }else if(tag.equals("writer")) {
+            result = searchWithWriter(keyword, pageable);
+        }else {
+            throw new IllegalArgumentException("Incorrect search tag detected.");
+        }
+
+        if(result.isEmpty()) {
+            throw new NoSuchElementException("Cannot found any articles.");
+        }
+        return result;
     }
 
     /**
@@ -72,9 +87,15 @@ public class ArticleServiceImpl implements ArticleService {
      *      Article data transfer object.
      * @return
      *      Created article id.
+     * @exception IllegalArgumentException
+     *      Throwable exception when empty article dto detected.
      */
     @Override
     public Long write(ArticleDTO articleDTO) {
+        if(articleDTO == null) {
+            throw new IllegalArgumentException("Unable to write an empty article.");
+        }
+
         Article result = articleRepository.save(convertToEntity(articleDTO));
 
         return result.getId();
@@ -86,12 +107,15 @@ public class ArticleServiceImpl implements ArticleService {
      *      Article id.
      * @return
      *      Found article data transfer object.
+     * @exception NoSuchElementException
+     *      Throwable exception when cannot found any article with id.
      */
     @Override
     public ArticleDTO read(Long id) {
-        Optional<Article> result = articleRepository.findById(id);
+        Article article = articleRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("No article found with id."));
 
-        return convertToDTO(result.get());
+        return convertToDTO(article);
     }
 
     /**
@@ -100,10 +124,13 @@ public class ArticleServiceImpl implements ArticleService {
      *      Article data transfer object including new data.
      * @return
      *      Modified article id.
+     * @exception NoSuchElementException
+     *      Throwable exception when no article found with id.
      */
     @Override
     public Long modify(ArticleDTO articleDTO) {
-        Article article = articleRepository.findById(articleDTO.getId()).get();
+        Article article = articleRepository.findById(articleDTO.getId())
+                .orElseThrow(() -> new NoSuchElementException("No article found with id."));
         article.setTitle(articleDTO.getTitle());
         article.setContent(articleDTO.getContent());
         articleRepository.save(article);
@@ -115,11 +142,17 @@ public class ArticleServiceImpl implements ArticleService {
      * Delete article that matches id of parameter.
      * @param id
      *      Article id.
+     * @exception NoSuchElementException
+     *      Throwable exception when no article found to delete.
      */
     @Override
     @Transactional
     public void delete(Long id) {
-        articleRepository.deleteById(id);
+        try {
+            articleRepository.deleteById(id);
+        }catch (EmptyResultDataAccessException e) {
+            throw new NoSuchElementException("Cannot found article to delete.");
+        }
     }
 
     /**
@@ -135,25 +168,12 @@ public class ArticleServiceImpl implements ArticleService {
     @Transactional
     public void updateView(Long articleId, HttpServletRequest request, HttpServletResponse response) {
         Cookie[] cookies = request.getCookies();
-        boolean isCookieExists = false;
+        boolean isCookieExists = checkCookieExists(cookies, articleId);
 
-        if(cookies == null) {
+        if(!isCookieExists) {
             Cookie newCookie = createDoubleHitPreventionCookie(articleId);
             response.addCookie(newCookie);
             articleRepository.updateViewById(articleId);
-        }else {
-            final String COOKIE_NAME_ID = COOKIE_NAME + articleId;
-            for(Cookie cookie : cookies) {
-                if(cookie.getName().equals(COOKIE_NAME_ID)) {
-                    isCookieExists = true;
-                    break;
-                }
-            }
-            if(!isCookieExists) {
-                Cookie newCookie = createDoubleHitPreventionCookie(articleId);
-                response.addCookie(newCookie);
-                articleRepository.updateViewById(articleId);
-            }
         }
     }
 
@@ -237,6 +257,30 @@ public class ArticleServiceImpl implements ArticleService {
                 .content(articleDTO.getContent())
                 .writer(articleDTO.getWriter())
                 .build();
+    }
+
+    /**
+     * Check cookie exists with cookie name.
+     * @param cookies
+     *      Cookies array.
+     * @param articleId
+     *      Article id.
+     * @return
+     *      Checking result.
+     */
+    private boolean checkCookieExists(Cookie[] cookies, Long articleId) {
+        if(cookies == null) {
+            return false;
+        }
+
+        final String COOKIE_NAME_ID = COOKIE_NAME + articleId;
+        for(Cookie cookie : cookies) {
+            if(cookie.getName().equals(COOKIE_NAME_ID)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
