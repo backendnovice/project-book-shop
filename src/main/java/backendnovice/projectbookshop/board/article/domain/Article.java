@@ -5,12 +5,10 @@
  * @changelog :
  * 2023-07-25 - backendnovice@gmail.com - create new file.
  * 2023-07-30 - backendnovice@gmail.com - add setter annotation.
- * 2023-08-01 - backendnovice@gmail.com - add column annotation.
- *                                      - change setter annotation to method.
+ * 2023-08-01 - backendnovice@gmail.com - add setter annotation.
  * 2023-08-13 - backendnovice@gmail.com - change filename to Article.
  * 2023-08-16 - backendnovice@gmail.com - add description annotation.
- * 2023-08-21 - backendnovice@gmail.com - rename column by annotation.
- *                                      - add Comment entity relations.
+ * 2023-08-21 - backendnovice@gmail.com - rename columns & add comment relations.
  */
 
 package backendnovice.projectbookshop.board.article.domain;

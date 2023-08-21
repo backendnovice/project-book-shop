@@ -1,11 +1,11 @@
 /**
  * @author    : backendnovice@gmail.com
- * @date      : 2023-08-21
+ * @date      : 2023-08-22
  * @desc      : A comment-related service interface. that define business logic for comment.
  * @changelog :
  * 2023-08-20 - backendnovice@gmail.com - create new file.
  * 2023-08-21 - backendnovice@gmail.com - add write, delete method.
- *                                      - add method description annotation.
+ * 2023-08-22 - backendnovice@gmail.com - add method descriptions.
  */
 
 package backendnovice.projectbookshop.board.comment.service;
@@ -32,10 +32,17 @@ public interface CommentService {
      * Create comment with DTO of parameter.
      * @param commentDTO
      *      CommentDTO object.
-     * @exception IllegalArgumentException
-     *      Throwable exception when empty comment dto detected.
      */
     void write(CommentDTO commentDTO);
+
+    /**
+     * Modify comment that matches id of dto.
+     * @param commentDTO
+     *      Comment data transfer object including new content.
+     * @exception NoSuchElementException
+     *      Throwable exception when no comment found to modify.
+     */
+    void modify(CommentDTO commentDTO);
 
     /**
      * Delete comment that matches id of parameter.

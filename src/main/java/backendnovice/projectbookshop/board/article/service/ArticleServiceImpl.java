@@ -1,6 +1,6 @@
 /**
  * @author    : backendnovice@gmail.com
- * @date      : 2023-08-21
+ * @date      : 2023-08-22
  * @desc      : An article-related service implementation class. that actually implement business logic for article.
  * @changelog :
  * 2023-07-25 - backendnovice@gmail.com - create new file.
@@ -13,6 +13,7 @@
  * 2023-08-16 - backendnovice@gmail.com - add description annotation.
  * 2023-08-17 - backendnovice@gmail.com - add exception handling.
  * 2023-08-21 - backendnovice@gmail.com - remove override description annotation.
+ * 2023-08-22 - backendnovice@gmail.com - separate search method & modify exception handling.
  */
 
 package backendnovice.projectbookshop.board.article.service;
@@ -44,14 +45,21 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public Page<ArticleDTO> search(PageDTO pageDTO, Pageable pageable) {
+    public Page<ArticleDTO> searchAll(Pageable pageable) {
+        Page<Article> result = articleRepository.findAll(pageable);
+
+        if(result.isEmpty()) {
+            throw new NoSuchElementException();
+        }
+
+        return result.map(this::convertToDTO);
+    }
+
+    @Override
+    public Page<ArticleDTO> searchByTags(PageDTO pageDTO, Pageable pageable) {
         String tag = pageDTO.getTag();
         String keyword = pageDTO.getKeyword();
         Page<ArticleDTO> result;
-
-        if(tag == null && keyword == null) {
-            return searchAll(pageable);
-        }
 
         if(tag.equals("title")) {
             result = searchWithTitle(keyword, pageable);
@@ -60,21 +68,18 @@ public class ArticleServiceImpl implements ArticleService {
         }else if(tag.equals("writer")) {
             result = searchWithWriter(keyword, pageable);
         }else {
-            throw new IllegalArgumentException("Incorrect search tag detected.");
+            throw new IllegalArgumentException();
         }
 
         if(result.isEmpty()) {
-            throw new NoSuchElementException("Cannot found any articles.");
+            throw new NoSuchElementException();
         }
+
         return result;
     }
 
     @Override
     public Long write(ArticleDTO articleDTO) {
-        if(articleDTO == null) {
-            throw new IllegalArgumentException("Unable to write an empty article.");
-        }
-
         Article result = articleRepository.save(convertToEntity(articleDTO));
 
         return result.getId();
@@ -83,15 +88,16 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public ArticleDTO read(Long id) {
         Article article = articleRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("No article found with id."));
+                .orElseThrow(NoSuchElementException::new);
 
         return convertToDTO(article);
     }
 
     @Override
+    @Transactional
     public Long modify(ArticleDTO articleDTO) {
         Article article = articleRepository.findById(articleDTO.getId())
-                .orElseThrow(() -> new NoSuchElementException("No article found with id."));
+                .orElseThrow(NoSuchElementException::new);
         article.setTitle(articleDTO.getTitle());
         article.setContent(articleDTO.getContent());
         articleRepository.save(article);
@@ -105,7 +111,7 @@ public class ArticleServiceImpl implements ArticleService {
         try {
             articleRepository.deleteById(id);
         }catch (EmptyResultDataAccessException e) {
-            throw new NoSuchElementException("Cannot found any article to delete.");
+            throw new NoSuchElementException();
         }
     }
 
@@ -120,17 +126,6 @@ public class ArticleServiceImpl implements ArticleService {
             response.addCookie(newCookie);
             articleRepository.updateViewById(articleId);
         }
-    }
-
-    /**
-     * Execute article selection query without any options.
-     * @param pageable
-     *      Pageable object.
-     * @return
-     *      Page object that include found articles.
-     */
-    private Page<ArticleDTO> searchAll(Pageable pageable) {
-        return articleRepository.findAll(pageable).map(this::convertToDTO);
     }
 
     /**

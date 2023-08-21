@@ -1,6 +1,6 @@
 /**
  * @author    : backendnovice@gmail.com
- * @date      : 2023-08-21
+ * @date      : 2023-08-22
  * @desc      : An article-related service interface. that define business logic for article.
  * @changelog :
  * 2023-07-25 - backendnovice@gmail.com - create new file.
@@ -11,6 +11,7 @@
  * 2023-08-13 - backendnovice@gmail.com - change filename to ArticleService.
  * 2023-08-16 - backendnovice@gmail.com - add description annotation.
  * 2023-08-21 - backendnovice@gmail.com - add method description annotation.
+ * 2023-08-22 - backendnovice@gmail.com - separate search method.
  */
 
 package backendnovice.projectbookshop.board.article.service;
@@ -26,6 +27,17 @@ import java.util.NoSuchElementException;
 
 public interface ArticleService {
     /**
+     * Execute article selection query without any options.
+     * @param pageable
+     *      Pageable object.
+     * @return
+     *      Page object that include found articles.
+     * @exception NoSuchElementException
+     *      Throwable exception when cannot found any articles.
+     */
+    Page<ArticleDTO> searchAll(Pageable pageable);
+
+    /**
      * Select articles with search tag and keyword.
      * @param pageDTO
      *      Page data transfer object including tag and keyword.
@@ -38,7 +50,7 @@ public interface ArticleService {
      * @exception NoSuchElementException
      *      Throwable exception when cannot found any articles.
      */
-    Page<ArticleDTO> search(PageDTO pageDTO, Pageable pageable);
+    Page<ArticleDTO> searchByTags(PageDTO pageDTO, Pageable pageable);
 
     /**
      * Create article with DTO of parameter.

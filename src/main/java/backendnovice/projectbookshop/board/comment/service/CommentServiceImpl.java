@@ -5,7 +5,7 @@
  * @changelog :
  * 2023-08-20 - backendnovice@gmail.com - create new file.
  * 2023-08-21 - backendnovice@gmail.com - add write, delete method.
- *                                      - remove override description annotation.
+ * 2023-08-22 - backendnovice@gmail.com - modify exception handling.
  */
 
 package backendnovice.projectbookshop.board.comment.service;
@@ -36,11 +36,15 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public void write(CommentDTO commentDTO) {
-        if(commentDTO == null) {
-            throw new IllegalArgumentException("Unable to write an empty comment.");
-        }
-
         commentRepository.save(convertToEntity(commentDTO));
+    }
+
+    @Override
+    public void modify(CommentDTO commentDTO) {
+        Comment comment = commentRepository.findById(commentDTO.getId())
+                .orElseThrow(NoSuchElementException::new);
+        comment.setContent(commentDTO.getContent());
+        commentRepository.save(comment);
     }
 
     @Override
@@ -49,7 +53,7 @@ public class CommentServiceImpl implements CommentService {
         try {
             commentRepository.deleteById(commentId);
         }catch (EmptyResultDataAccessException e) {
-            throw new NoSuchElementException("Cannot found any comment to delete.");
+            throw new NoSuchElementException();
         }
     }
 

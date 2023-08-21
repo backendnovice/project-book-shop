@@ -1,7 +1,7 @@
 /**
  * @author    : backendnovice@gmail.com
  * @date      : 2023-08-16
- * @desc      : An page-related data transfer object class. that used to books and articles.
+ * @desc      : A page-related data transfer object class. that used to books and articles.
  * @changelog :
  * 2023-07-29 - backendnovice@gmail.com - create new file.
  * 2023-08-01 - backendnovice@gmail.com - add constructor paged condition check.
