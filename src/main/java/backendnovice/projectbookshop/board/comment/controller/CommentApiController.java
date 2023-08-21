@@ -1,9 +1,10 @@
 /**
  * @author    : backendnovice@gmail.com
- * @date      : 2023-08-20
+ * @date      : 2023-08-21
  * @desc      : An article-related controller class. that provide API when received requests from the view layer.
  * @changelog :
  * 2023-08-20 - backendnovice@gmail.com - create new file.
+ * 2023-08-21 - backendnovice@gmail.com - add write, delete handle methods.
  */
 
 package backendnovice.projectbookshop.board.comment.controller;
@@ -23,8 +24,23 @@ public class CommentApiController {
         this.commentService = commentService;
     }
 
+    /**
+     * Call comment service method to process register new comment.
+     * @param commentDTO
+     *      Comment data transfer object.
+     */
     @PostMapping("/write")
     public void write(CommentDTO commentDTO) {
         commentService.write(commentDTO);
+    }
+
+    /**
+     * Call comment service method to process delete comment by id.
+     * @param commentId
+     *      Comment id.
+     */
+    @PostMapping("/delete")
+    public void delete(Long commentId) {
+        commentService.delete(commentId);
     }
 }

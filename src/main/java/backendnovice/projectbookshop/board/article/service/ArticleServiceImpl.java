@@ -1,6 +1,6 @@
 /**
  * @author    : backendnovice@gmail.com
- * @date      : 2023-08-17
+ * @date      : 2023-08-21
  * @desc      : An article-related service implementation class. that actually implement business logic for article.
  * @changelog :
  * 2023-07-25 - backendnovice@gmail.com - create new file.
@@ -12,6 +12,7 @@
  *                                      - add prevent double hit cookie method.
  * 2023-08-16 - backendnovice@gmail.com - add description annotation.
  * 2023-08-17 - backendnovice@gmail.com - add exception handling.
+ * 2023-08-21 - backendnovice@gmail.com - remove override description annotation.
  */
 
 package backendnovice.projectbookshop.board.article.service;
@@ -42,19 +43,6 @@ public class ArticleServiceImpl implements ArticleService {
         this.articleRepository = articleRepository;
     }
 
-    /**
-     * Get search tag and keyword and select article with that data.
-     * @param pageDTO
-     *      Page data transfer object including tag and keyword.
-     * @param pageable
-     *      Pageable object.
-     * @return
-     *      Page object that include found articles.
-     * @exception IllegalArgumentException
-     *      Throwable exception when incorrect search tag detected.
-     * @exception NoSuchElementException
-     *      Throwable exception when cannot found any articles.
-     */
     @Override
     public Page<ArticleDTO> search(PageDTO pageDTO, Pageable pageable) {
         String tag = pageDTO.getTag();
@@ -81,15 +69,6 @@ public class ArticleServiceImpl implements ArticleService {
         return result;
     }
 
-    /**
-     * Create article with DTO of parameter.
-     * @param articleDTO
-     *      Article data transfer object.
-     * @return
-     *      Created article id.
-     * @exception IllegalArgumentException
-     *      Throwable exception when empty article dto detected.
-     */
     @Override
     public Long write(ArticleDTO articleDTO) {
         if(articleDTO == null) {
@@ -101,15 +80,6 @@ public class ArticleServiceImpl implements ArticleService {
         return result.getId();
     }
 
-    /**
-     * Select article that matches id of parameter.
-     * @param id
-     *      Article id.
-     * @return
-     *      Found article data transfer object.
-     * @exception NoSuchElementException
-     *      Throwable exception when cannot found any article with id.
-     */
     @Override
     public ArticleDTO read(Long id) {
         Article article = articleRepository.findById(id)
@@ -118,15 +88,6 @@ public class ArticleServiceImpl implements ArticleService {
         return convertToDTO(article);
     }
 
-    /**
-     * Modify article that matches id of dto.
-     * @param articleDTO
-     *      Article data transfer object including new data.
-     * @return
-     *      Modified article id.
-     * @exception NoSuchElementException
-     *      Throwable exception when no article found with id.
-     */
     @Override
     public Long modify(ArticleDTO articleDTO) {
         Article article = articleRepository.findById(articleDTO.getId())
@@ -138,32 +99,16 @@ public class ArticleServiceImpl implements ArticleService {
         return article.getId();
     }
 
-    /**
-     * Delete article that matches id of parameter.
-     * @param id
-     *      Article id.
-     * @exception NoSuchElementException
-     *      Throwable exception when no article found to delete.
-     */
     @Override
     @Transactional
     public void delete(Long id) {
         try {
             articleRepository.deleteById(id);
         }catch (EmptyResultDataAccessException e) {
-            throw new NoSuchElementException("Cannot found article to delete.");
+            throw new NoSuchElementException("Cannot found any article to delete.");
         }
     }
 
-    /**
-     * Update view count after check cookies for prevent increasing views redundancy.
-     * @param articleId
-     *      Article id.
-     * @param request
-     *      Request cookies to check article visited today already.
-     * @param response
-     *      Response new cookie when request cookie not exists.
-     */
     @Override
     @Transactional
     public void updateView(Long articleId, HttpServletRequest request, HttpServletResponse response) {

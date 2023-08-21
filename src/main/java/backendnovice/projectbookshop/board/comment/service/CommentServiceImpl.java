@@ -1,9 +1,11 @@
 /**
  * @author    : backendnovice@gmail.com
- * @date      : 2023-08-20
+ * @date      : 2023-08-21
  * @desc      : A comment-related service implementation class. that actually implement business logic for comment.
  * @changelog :
  * 2023-08-20 - backendnovice@gmail.com - create new file.
+ * 2023-08-21 - backendnovice@gmail.com - add write, delete method.
+ *                                      - remove override description annotation.
  */
 
 package backendnovice.projectbookshop.board.comment.service;
@@ -11,7 +13,13 @@ package backendnovice.projectbookshop.board.comment.service;
 import backendnovice.projectbookshop.board.comment.domain.Comment;
 import backendnovice.projectbookshop.board.comment.dto.CommentDTO;
 import backendnovice.projectbookshop.board.comment.repository.CommentRepository;
+import jakarta.transaction.Transactional;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.NoSuchElementException;
 
 @Service
 public class CommentServiceImpl implements CommentService {
@@ -21,13 +29,11 @@ public class CommentServiceImpl implements CommentService {
         this.commentRepository = commentRepository;
     }
 
-    /**
-     * Create comment with DTO of parameter.
-     * @param commentDTO
-     *      CommentDTO object.
-     * @exception IllegalArgumentException
-     *      Throwable exception when empty comment dto detected.
-     */
+    @Override
+    public Page<CommentDTO> getComments(Long articleId, Pageable pageable) {
+        return commentRepository.findAllByArticleId(articleId, pageable).map(this::convertToDTO);
+    }
+
     @Override
     public void write(CommentDTO commentDTO) {
         if(commentDTO == null) {
@@ -35,6 +41,16 @@ public class CommentServiceImpl implements CommentService {
         }
 
         commentRepository.save(convertToEntity(commentDTO));
+    }
+
+    @Override
+    @Transactional
+    public void delete(Long commentId) {
+        try {
+            commentRepository.deleteById(commentId);
+        }catch (EmptyResultDataAccessException e) {
+            throw new NoSuchElementException("Cannot found any comment to delete.");
+        }
     }
 
     /**
