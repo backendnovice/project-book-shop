@@ -1,6 +1,6 @@
 /**
  * @author    : backendnovice@gmail.com
- * @date      : 2023-08-22
+ * @date      : 2023-08-23
  * @desc      : An article-related controller class. that maps URIs to handle requests from the view layer.
  * @changelog :
  * 2023-07-25 - backendnovice@gmail.com - create new file.
@@ -12,6 +12,7 @@
  * 2023-08-13 - backendnovice@gmail.com - change filename to ArticleController.
  * 2023-08-16 - backendnovice@gmail.com - add description annotation.
  * 2023-08-22 - backendnovice@gmail.com - refactoring & apply execption handling.
+ * 2023-08-23 - backendnovice@gmail.com - fix redirection issue.
  */
 
 package backendnovice.projectbookshop.board.article.controller;
@@ -26,6 +27,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.NoSuchElementException;
 
@@ -75,8 +77,10 @@ public class ArticleController {
             }
         }catch (NoSuchElementException e) {
             message = "Cannot found any articles.";
+            result = articleService.searchAll(pageable);
         }catch (IllegalArgumentException e) {
             message = "Incorrect search tag detected.";
+            result = articleService.searchAll(pageable);
         }
 
         PageDTO search = new PageDTO(result);
@@ -101,20 +105,27 @@ public class ArticleController {
      *      If there is an article matches with id, will return read URI. if not, will return list redirection URI.
      */
     @GetMapping("/read")
-    public String getReadPage(Model model, @RequestParam("id") Long articleId, HttpServletRequest request
-            , HttpServletResponse response) {
-        try {
-            ArticleDTO result = articleService.read(articleId);
-            articleService.updateView(articleId, request, response);
-            result.setViews(result.getViews() + 1);
-            model.addAttribute("dto", result);
-
-            return "article/read";
-        }catch (NoSuchElementException e) {
-            message = "No article found with id.";
-            model.addAttribute("message", message);
+    public String getReadPage(Model model, RedirectAttributes redirectAttributes, @RequestParam(value = "id", required = false) Long articleId
+            , HttpServletRequest request, HttpServletResponse response) {
+        if(articleId == null) {
+            message = "Cannot read article with blank id.";
+            redirectAttributes.addFlashAttribute("message", message);
 
             return "redirect:/article/list";
+        }else {
+            try {
+                ArticleDTO result = articleService.read(articleId);
+                articleService.updateView(articleId, request, response);
+                result.setViews(result.getViews() + 1);
+                model.addAttribute("dto", result);
+
+                return "article/read";
+            }catch (NoSuchElementException e) {
+                message = "No article found with id.";
+                redirectAttributes.addFlashAttribute("message", message);
+
+                return "redirect:/article/list";
+            }
         }
     }
 
@@ -128,17 +139,24 @@ public class ArticleController {
      *      If there is an article matches with id, will return modify URI. if not, will return list redirection URI.
      */
     @GetMapping("/modify")
-    public String getModifyPage(Model model, @RequestParam("id") Long articleId) {
-        try {
-            ArticleDTO result = articleService.read(articleId);
-            model.addAttribute("dto", result);
-
-            return "article/modify";
-        }catch (NoSuchElementException e) {
-            message = "No article found with id.";
-            model.addAttribute("message", message);
+    public String getModifyPage(Model model, RedirectAttributes redirectAttributes, @RequestParam(value = "id", required = false) Long articleId) {
+        if(articleId == null) {
+            message = "Cannot modify article with blank id.";
+            redirectAttributes.addFlashAttribute("message", message);
 
             return "redirect:/article/list";
+        }else {
+            try {
+                ArticleDTO result = articleService.read(articleId);
+                model.addAttribute("dto", result);
+
+                return "article/modify";
+            }catch (NoSuchElementException e) {
+                message = "No article found with id.";
+                redirectAttributes.addFlashAttribute("message", message);
+
+                return "redirect:/article/list";
+            }
         }
     }
 
@@ -150,20 +168,19 @@ public class ArticleController {
      *      If registration process succeeds, will return read URI. if process fails, will return write redirection URI.
      */
     @PostMapping("/write")
-    public String callWriteProcessService(Model model, ArticleDTO articleDTO) {
-        if(articleDTO == null) {
-            message = "Unable to write an empty article";
-            model.addAttribute("message", message);
+    public String callWriteProcessService(RedirectAttributes redirectAttributes, ArticleDTO articleDTO) {
+        if(articleDTO.getTitle() == null || articleDTO.getContent() == null || articleDTO.getWriter() == null) {
+            message = "cannot write an empty article.";
+            redirectAttributes.addFlashAttribute("message", message);
 
             return "redirect:/article/write";
         }else {
             long result = articleService.write(articleDTO);
             message = "article registration succeed.";
-            model.addAttribute("message", message);
+            redirectAttributes.addFlashAttribute("message", message);
 
             return "redirect:/article/read?id=" + result;
         }
-
     }
 
     /**
@@ -174,16 +191,16 @@ public class ArticleController {
      *      If modification process succeeds, will return read URI. if process fails, will return list redirection URI.
      */
     @PostMapping("/modify")
-    public String callModifyProcessService(Model model, ArticleDTO articleDTO) {
+    public String callModifyProcessService(RedirectAttributes redirectAttributes, ArticleDTO articleDTO) {
         try {
             long result = articleService.modify(articleDTO);
             message = "article modification succeed.";
-            model.addAttribute("message", message);
+            redirectAttributes.addFlashAttribute("message", message);
 
             return "redirect:/article/read?id=" + result;
         }catch (NoSuchElementException e) {
             message = "no article found with id.";
-            model.addAttribute("message", message);
+            redirectAttributes.addFlashAttribute("message", message);
 
             return "redirect:/article/list";
         }
@@ -197,7 +214,7 @@ public class ArticleController {
      *      Article list redirection URI.
      */
     @PostMapping("/delete")
-    public String callDeleteProcessService(Model model, ArticleDTO articleDTO) {
+    public String callDeleteProcessService(RedirectAttributes redirectAttributes, ArticleDTO articleDTO) {
         try {
             articleService.delete(articleDTO.getId());
             message = "article deletion succeed.";
@@ -205,7 +222,7 @@ public class ArticleController {
             message = "cannot found any article to delete.";
         }
 
-        model.addAttribute("message", message);
+        redirectAttributes.addFlashAttribute("message", message);
         return "redirect:/article/list";
     }
 }
