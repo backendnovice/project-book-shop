@@ -1,6 +1,6 @@
 /**
  * @author    : backendnovice@gmail.com
- * @date      : 2023-08-17
+ * @date      : 2023-08-24
  * @desc      : ArticleService test class.
  * @changelog :
  * 2023-07-25 - backendnovice@gmail.com - create new file.
@@ -10,6 +10,7 @@
  * 2023-08-01 - backendnovice@gmail.com - add update view count test.
  * 2023-08-13 - backendnovice@gmail.com - change filename to ArticleRepositoryTests.
  * 2023-08-17 - backendnovice@gmail.com - add description annotation.
+ * 2023-08-24 - backendnovice@gmail.com - fix all test.
  */
 
 package backendnovice.projectbookshop.board.service;
@@ -24,17 +25,21 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -54,92 +59,136 @@ public class ArticleServiceTests {
     @BeforeAll
     void initialize() {
         List<Article> fakeArticleList = new ArrayList<>();
+        fakeArticleList.add(new Article());
         fakeArticles = new PageImpl<>(fakeArticleList);
     }
 
     /**
-     * Test search service method without any options.
+     * Test success case for searchAll() method.
      */
     @Test
-    @DisplayName("Search test without any options")
-    void searchTest() {
+    void should_ReturnArticleDTOTypePageObject_When_SearchAllIsCalledAndSucceed() {
         // given
-        PageDTO pageDTO = PageDTO.builder().build();
+        Pageable pageable = PageRequest.of(0, 10);
 
         // when
-        when(articleRepository.findAll(any(PageRequest.class))).thenReturn(fakeArticles);
-        Page<ArticleDTO> result = articleService.search(pageDTO, PageRequest.of(0, 10));
+        when(articleRepository.findAll(any(Pageable.class))).thenReturn(fakeArticles);
 
         // then
+        Page<ArticleDTO> result = articleService.searchAll(pageable);
         assertThat(result).isNotNull();
     }
 
     /**
-     * Test search service method with title.
+     * Test failure case for searchAll() method.
      */
     @Test
-    @DisplayName("Search test with title")
-    void searchTestWithTitle() {
+    void should_ThrowNoSuchElementException_When_SearchAllIsCalledAndFailed() {
         // given
-        PageDTO pageDTO = PageDTO.builder()
-                .tag("title")
-                .keyword("title")
-                .build();
+        Pageable pageable = PageRequest.of(0, 10);
 
         // when
-        when(articleRepository.findAllByTitleContainsIgnoreCase(any(), any(PageRequest.class))).thenReturn(fakeArticles);
-        Page<ArticleDTO> result = articleService.search(pageDTO, PageRequest.of(0, 10));
+        when(articleRepository.findAll(any(Pageable.class))).thenThrow(NoSuchElementException.class);
 
         // then
+        assertThatThrownBy(() -> {
+            Page<ArticleDTO> result = articleService.searchAll(pageable);
+        }).isInstanceOf(NoSuchElementException.class);
+    }
+
+    /**
+     * Test success case for searchByTags() method with title tag.
+     */
+    @Test
+    void should_ReturnArticleDTOTypePageObject_When_SearchByTagsIsCalledWithTitleTagAndSucceed() {
+        // given
+        Pageable pageable = PageRequest.of(0, 10);
+        PageDTO pageDTO = PageDTO.builder().tag("title").keyword("keyword").build();
+
+        // when
+        when(articleRepository.findAllByTitleContainsIgnoreCase(anyString(), any(Pageable.class))).thenReturn(fakeArticles);
+
+        // then
+        Page<ArticleDTO> result = articleService.searchByTags(pageDTO, pageable);
         assertThat(result).isNotNull();
     }
 
     /**
-     * Test search service method with content.
+     * Test success case for searchByTags() method with content tag.
      */
     @Test
-    @DisplayName("Search test with content")
-    void searchWithOptionsTestWithContent() {
+    void should_ReturnArticleDTOTypePageObject_When_SearchByTagsIsCalledWithContentTagAndSucceed() {
         // given
-        PageDTO pageDTO = PageDTO.builder()
-                .tag("content")
-                .keyword("content")
-                .build();
+        Pageable pageable = PageRequest.of(0, 10);
+        PageDTO pageDTO = PageDTO.builder().tag("content").keyword("keyword").build();
 
         // when
-        when(articleRepository.findAllByContentContainsIgnoreCase(any(), any(PageRequest.class))).thenReturn(fakeArticles);
-        Page<ArticleDTO> result = articleService.search(pageDTO, PageRequest.of(0, 10));
+        when(articleRepository.findAllByContentContainsIgnoreCase(anyString(), any(Pageable.class))).thenReturn(fakeArticles);
 
         // then
+        Page<ArticleDTO> result = articleService.searchByTags(pageDTO, pageable);
         assertThat(result).isNotNull();
     }
 
     /**
-     * Test search service method with writer.
+     * Test success case for searchByTags() method with writer tag.
      */
     @Test
-    @DisplayName("Search test with writer")
-    void searchWithOptionsTestWithWriter() {
+    void should_ReturnArticleDTOTypePageObject_When_SearchByTagsIsCalledWithWriterTagAndSucceed() {
         // given
-        PageDTO pageDTO = PageDTO.builder()
-                .tag("writer")
-                .keyword("writer")
-                .build();
+        Pageable pageable = PageRequest.of(0, 10);
+        PageDTO pageDTO = PageDTO.builder().tag("writer").keyword("keyword").build();
 
         // when
-        when(articleRepository.findAllByWriterContainsIgnoreCase(any(), any(PageRequest.class))).thenReturn(fakeArticles);
-        Page<ArticleDTO> result = articleService.search(pageDTO, PageRequest.of(0, 10));
+        when(articleRepository.findAllByWriterContainsIgnoreCase(anyString(), any(Pageable.class))).thenReturn(fakeArticles);
 
         // then
+        Page<ArticleDTO> result = articleService.searchByTags(pageDTO, pageable);
         assertThat(result).isNotNull();
     }
 
     /**
-     * Test write service method test.
+     * Test failure case for searchByTags() method with wrong tag.
      */
     @Test
-    @DisplayName("Write Test")
-    void writeTest() {
+    void should_ThrowIllegalArgumentException_When_SearchByTagsIsCalledWithWrongTagAndFailed() {
+        // given
+        Pageable pageable = PageRequest.of(0, 10);
+        PageDTO pageDTO = PageDTO.builder().tag("wrong").keyword("keyword").build();
+
+        // when
+
+        // then
+        assertThatThrownBy(() -> {
+            Page<ArticleDTO> result = articleService.searchByTags(pageDTO, pageable);
+        }).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    /**
+     * Test failure case for searchByTags() method expecting empty result.
+     */
+    @Test
+    void should_ThrowNoSuchElementException_When_SearchByTagsIsCalledExpectEmpty() {
+        // given
+        Pageable pageable = PageRequest.of(0, 10);
+        PageDTO pageDTO = PageDTO.builder().tag("title").keyword("keyword").build();
+        List<Article> blank = new ArrayList<>();
+        Page<Article> fakeBlankArticles = new PageImpl<>(blank);
+
+        // when
+        when(articleRepository.findAllByTitleContainsIgnoreCase(anyString(), any(Pageable.class))).thenReturn(fakeBlankArticles);
+
+        // then
+        assertThatThrownBy(() -> {
+            Page<ArticleDTO> result = articleService.searchByTags(pageDTO, pageable);
+        }).isInstanceOf(NoSuchElementException.class);
+    }
+
+    /**
+     * Test success case for write() method.
+     */
+    @Test
+    void should_ReturnArticleId_When_WriteIsCalledWithArticleDTOAndSucceed() {
         // given
         Article article = mock(Article.class);
         ArticleDTO articleDTO = mock(ArticleDTO.class);
@@ -153,11 +202,10 @@ public class ArticleServiceTests {
     }
 
     /**
-     * Test read service method test.
+     * Test success case for read() method.
      */
     @Test
-    @DisplayName("Read Test")
-    void readTest() {
+    void should_ReturnArticleDTO_When_ReadIsCalledWithArticleIdAndSucceed() {
         // given
         Article article = mock(Article.class);
 
@@ -170,11 +218,27 @@ public class ArticleServiceTests {
     }
 
     /**
-     * Test modify service method test.
+     * Test failure case for read() method.
      */
     @Test
-    @DisplayName("Modify Test")
-    void modifyTest() {
+    void should_ThrowNoSuchElementException_When_ReadIsCalledWithArticleIdAndFailed() {
+        // given
+        Article article = mock(Article.class);
+
+        // when
+        when(articleRepository.findById(anyLong())).thenThrow(NoSuchElementException.class);
+
+        // then
+        assertThatThrownBy(() -> {
+            ArticleDTO result = articleService.read(1L);
+        }).isInstanceOf(NoSuchElementException.class);
+    }
+
+    /**
+     * Test success case for modify() method.
+     */
+    @Test
+    void should_ReturnArticleId_When_ModifyIsCalledWithArticleDTOAndSucceed() {
         // given
         ArticleDTO articleDTO = mock(ArticleDTO.class);
         Article article = mock(Article.class);
@@ -189,11 +253,27 @@ public class ArticleServiceTests {
     }
 
     /**
-     * Test delete service method test.
+     * Test failure case for modify() method.
      */
     @Test
-    @DisplayName("Delete Test")
-    void deleteTest() {
+    void should_ThrowNoSuchElementException_When_ModifyIsCalledWithArticleDTOAndFailed() {
+        // given
+        ArticleDTO articleDTO = mock(ArticleDTO.class);
+
+        // when
+        when(articleRepository.findById(anyLong())).thenThrow(NoSuchElementException.class);
+
+        // then
+        assertThatThrownBy(() -> {
+            Long result = articleService.modify(articleDTO);
+        }).isInstanceOf(NoSuchElementException.class);
+    }
+
+    /**
+     * Test success case for delete() method.
+     */
+    @Test
+    void should_ReturnArticleId_When_DeleteIsCalledWithArticleIdAndSucceed() {
         // given
         Long id = 1L;
 
@@ -206,11 +286,27 @@ public class ArticleServiceTests {
     }
 
     /**
-     * Test update view count service method test.
+     * Test failure case for delete() method.
      */
     @Test
-    @DisplayName("Update article view test")
-    void updateViewByIdTest() {
+    void should_ThrowNoSuchElementException_When_DeleteIsCalledWithArticleIdAndFailed() {
+        // given
+        Long id = 1L;
+
+        // when
+        doThrow(EmptyResultDataAccessException.class).when(articleRepository).deleteById(id);
+
+        // then
+        assertThatThrownBy(() -> {
+            articleService.delete(id);
+        }).isInstanceOf(NoSuchElementException.class);
+    }
+
+    /**
+     * Test success case for updateView() method.
+     */
+    @Test
+    void should_CalledUpdateViewByIdOneTimes_When_UpdateViewAndSucceed() {
         // given
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
@@ -218,10 +314,10 @@ public class ArticleServiceTests {
         Long id = 1L;
 
         // when
-        doNothing().when(articleRepository).updateViewById(anyLong());
+        doNothing().when(articleRepository).updateViewsById(anyLong());
         articleService.updateView(id, request, response);
 
         // then
-        verify(articleRepository, times(1)).updateViewById(id);
+        verify(articleRepository, times(1)).updateViewsById(id);
     }
 }

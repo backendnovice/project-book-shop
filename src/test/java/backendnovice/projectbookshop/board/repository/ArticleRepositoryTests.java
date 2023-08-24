@@ -1,12 +1,13 @@
 /**
  * @author    : backendnovice@gmail.com
- * @date      : 2023-08-17
+ * @date      : 2023-08-24
  * @desc      : ArticleRepository test class.
  * @changelog :
  * 2023-07-25 - backendnovice@gmail.com - create new file.
  * 2023-08-01 - backendnovice@gmail.com - add update view count test.
  * 2023-08-13 - backendnovice@gmail.com - change filename to ArticleRepositoryTests.
  * 2023-08-17 - backendnovice@gmail.com - add description annotation.
+ * 2023-08-24 - backendnovice@gmail.com - apply method naming convention.
  */
 
 package backendnovice.projectbookshop.board.repository;
@@ -58,8 +59,7 @@ public class ArticleRepositoryTests {
      * Test article select query method with title on succeed.
      */
     @Test
-    @DisplayName("Select Board Test with Title (Success)")
-    void findAllByTitleContainsIgnoreCaseTest_Success() {
+    void should_ReturnArticleTypePageObject_When_FindAllByTitleContainsIgnoreCaseIsCalledAndSucceed() {
         // given
         Pageable pageable = PageRequest.of(0, 10);
         String title = "title";
@@ -77,8 +77,7 @@ public class ArticleRepositoryTests {
      * Test article select query method with title on failure.
      */
     @Test
-    @DisplayName("Select Board Test with Title (Failure)")
-    void findAllByTitleContainsIgnoreCaseTest_Failure() {
+    void should_ReturnArticleTypePageObject_When_FindAllByTitleContainsIgnoreCaseIsCalledAndFailed() {
         // given
         Pageable pageable = PageRequest.of(0, 10);
         String title = "wrong";
@@ -94,8 +93,7 @@ public class ArticleRepositoryTests {
      * Test article select query method with content on succeed.
      */
     @Test
-    @DisplayName("Select Board Test with Content (Success)")
-    void findAllByContentContainsIgnoreCaseTest_Success() {
+    void should_ReturnArticleTypePageObject_When_FindAllByContentContainsIgnoreCaseIsCalledAndSucceed() {
         // given
         Pageable pageable = PageRequest.of(0, 10);
         String content = "content";
@@ -113,8 +111,7 @@ public class ArticleRepositoryTests {
      * Test article select query method with content on failure.
      */
     @Test
-    @DisplayName("Select Board Test with Content (Failure)")
-    void findAllByContentContainsIgnoreCaseTest_Failure() {
+    void should_ReturnArticleTypePageObject_When_FindAllByContentContainsIgnoreCaseIsCalledAndFailed() {
         // given
         Pageable pageable = PageRequest.of(0, 10);
         String content = "wrong";
@@ -130,8 +127,7 @@ public class ArticleRepositoryTests {
      * Test article select query method with writer on succeed.
      */
     @Test
-    @DisplayName("Select Board Test with Writer (Success)")
-    void findAllByWriterContainsIgnoreCaseTest_Success() {
+    void should_ReturnArticleTypePageObject_When_FindAllByWriterContainsIgnoreCaseIsCalledAndSucceed() {
         // given
         Pageable pageable = PageRequest.of(0, 10);
         String writer = "writer";
@@ -149,8 +145,7 @@ public class ArticleRepositoryTests {
      * Test article select query method with writer on failure.
      */
     @Test
-    @DisplayName("Select Board Test with Writer (Failure)")
-    void findAllByWriterContainsIgnoreCaseTest_Failure() {
+    void should_ReturnArticleTypePageObject_When_FindAllByWriterContainsIgnoreCaseIsCalledAndFailed() {
         // given
         Pageable pageable = PageRequest.of(0, 10);
         String writer = "wrong";
@@ -167,12 +162,12 @@ public class ArticleRepositoryTests {
      */
     @Test
     @DisplayName("Update View count Test with ID")
-    void updateViewByIdTest() {
+    void Should_IncreaseArticleViews_When_UpdateViewsByIdIsCalled() {
         // given
         Long id = 1L;
 
         // when
-        articleRepository.updateViewById(id);
+        articleRepository.updateViewsById(id);
 
         // then
         Article article = articleRepository.findById(id).orElseGet(null);
