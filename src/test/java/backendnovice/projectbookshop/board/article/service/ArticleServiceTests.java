@@ -13,7 +13,7 @@
  * 2023-08-24 - backendnovice@gmail.com - fix all test.
  */
 
-package backendnovice.projectbookshop.board.service;
+package backendnovice.projectbookshop.board.article.service;
 
 import backendnovice.projectbookshop.board.article.domain.Article;
 import backendnovice.projectbookshop.board.article.dto.ArticleDTO;

@@ -10,7 +10,7 @@
  * 2023-08-24 - backendnovice@gmail.com - apply method naming convention.
  */
 
-package backendnovice.projectbookshop.board.repository;
+package backendnovice.projectbookshop.board.article.repository;
 
 import backendnovice.projectbookshop.board.article.domain.Article;
 import backendnovice.projectbookshop.board.article.repository.ArticleRepository;
