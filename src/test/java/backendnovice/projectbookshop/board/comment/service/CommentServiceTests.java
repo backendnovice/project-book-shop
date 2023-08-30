@@ -45,6 +45,9 @@ public class CommentServiceTests {
 
     private Page<Comment> emptyComments;
 
+    /**
+     * Initialize before all tests. initialize "fakeComments" and "emptyComments".
+     */
     @BeforeAll
     void initialize() {
         List<Comment> commentList = new ArrayList<>();
@@ -53,6 +56,9 @@ public class CommentServiceTests {
         emptyComments = Page.empty();
     }
 
+    /**
+     * Test success case for getComments() method.
+     */
     @Test
     void should_ReturnCommentDTOTypePageObject_When_GetCommentsIsCalledAndSucceed() {
         // given
@@ -67,6 +73,9 @@ public class CommentServiceTests {
         assertThat(result).isNotNull();
     }
 
+    /**
+     * Test failure case for getComments() method.
+     */
     @Test
     void should_ThrowNoSuchElementException_When_GetCommentsIsCalledAndFailed() {
         // given
@@ -82,6 +91,9 @@ public class CommentServiceTests {
         }).isInstanceOf(NoSuchElementException.class);
     }
 
+    /**
+     * Test success case for write() method.
+     */
     @Test
     void should_CalledSaveOneTimes_When_WriteIsCalledAndSucceed() {
         // given
@@ -96,6 +108,9 @@ public class CommentServiceTests {
         verify(commentRepository, times(1)).save(any(Comment.class));
     }
 
+    /**
+     * Test success case for modify() method.
+     */
     @Test
     void should_CalledSaveOneTimes_When_ModifyIsCalledAndSucceed() {
         // given
@@ -112,6 +127,9 @@ public class CommentServiceTests {
         verify(commentRepository, times(1)).save(any(Comment.class));
     }
 
+    /**
+     * Test failure case for modify() method.
+     */
     @Test
     void should_ThrowNoSuchElementException_When_ModifyIsCalledAndFailed() {
         // given
@@ -126,6 +144,9 @@ public class CommentServiceTests {
         }).isInstanceOf(NoSuchElementException.class);
     }
 
+    /**
+     * Test success case for delete() method.
+     */
     @Test
     void should_CalledDeleteByIdOneTimes_When_DeleteIsCalledAndSucceed() {
         // given
@@ -139,6 +160,9 @@ public class CommentServiceTests {
         verify(commentRepository, times(1)).deleteById(commentId);
     }
 
+    /**
+     * Test failure case for delete() method.
+     */
     @Test
     void should_ThrowNoSuchElementException_When_DeleteIsCalledAndFailed() {
         // given

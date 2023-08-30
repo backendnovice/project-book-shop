@@ -59,6 +59,9 @@ public class CommentRepositoryTests {
         }
     }
 
+    /**
+     * Test comment select query method with title on succeed.
+     */
     @Test
     void should_ReturnCommentTypePageObject_When_FindAllByArticleIdIsCalledAndSucceed() {
         // given
@@ -74,6 +77,9 @@ public class CommentRepositoryTests {
         assertThat(result.getTotalElements()).isEqualTo(50);
     }
 
+    /**
+     * Test comment select query method with title on failed.
+     */
     @Test
     void should_ReturnEmptyObject_When_FindAllByArticleIdIsCalledAndFailed() {
         // given
