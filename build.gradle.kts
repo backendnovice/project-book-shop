@@ -1,5 +1,9 @@
+import org.gradle.kotlin.dsl.jacoco
+import org.gradle.kotlin.dsl.test
+
 plugins {
 	java
+	jacoco
 	id("org.springframework.boot") version "3.1.2"
 	id("io.spring.dependency-management") version "1.1.2"
 }
@@ -33,10 +37,38 @@ dependencies {
 	// Project Lombok
 	compileOnly("org.projectlombok:lombok:1.18.28")
 	annotationProcessor("org.projectlombok:lombok:1.18.28")
+}
 
-
+// JaCoCo default configurations.
+jacoco {
+	toolVersion = "0.8.9"
+	reportsDirectory.set(layout.buildDirectory.dir("reports/jacoco"))
 }
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+tasks.test {
+	// Report always generated after test run.
+	finalizedBy(tasks.jacocoTestReport)
+}
+tasks.jacocoTestReport {
+	// Test always required before generating report.
+	dependsOn(tasks.test)
+	// Set report output.
+	reports {
+		xml.required.set(false)
+		csv.required.set(false)
+		html.outputLocation.set(file("${buildDir}/jacocoResult"))
+	}
+}
+tasks.jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			limit {
+				// Set code coverage options.
+				minimum = "0.75".toBigDecimal()
+			}
+		}
+	}
 }
