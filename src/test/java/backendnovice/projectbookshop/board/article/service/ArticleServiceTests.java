@@ -19,12 +19,13 @@ import backendnovice.projectbookshop.board.article.domain.Article;
 import backendnovice.projectbookshop.board.article.dto.ArticleDTO;
 import backendnovice.projectbookshop.global.dto.PageDTO;
 import backendnovice.projectbookshop.board.article.repository.ArticleRepository;
-import backendnovice.projectbookshop.board.article.service.ArticleServiceImpl;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -43,7 +44,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ArticleServiceTests {
     @Mock
     private ArticleRepository articleRepository;
@@ -53,14 +53,17 @@ public class ArticleServiceTests {
 
     private Page<Article> fakeArticles;
 
+    private Page<Article> emptyArticles;
+
     /**
-     * Initialize before all tests. initialize "fakeArticles".
+     * Initialize before each test. initialize "fakeArticles".
      */
-    @BeforeAll
+    @BeforeEach
     void initialize() {
         List<Article> fakeArticleList = new ArrayList<>();
         fakeArticleList.add(new Article());
         fakeArticles = new PageImpl<>(fakeArticleList);
+        emptyArticles = Page.empty();
     }
 
     /**
@@ -88,7 +91,7 @@ public class ArticleServiceTests {
         Pageable pageable = PageRequest.of(0, 10);
 
         // when
-        when(articleRepository.findAll(any(Pageable.class))).thenThrow(NoSuchElementException.class);
+        when(articleRepository.findAll(any(Pageable.class))).thenReturn(emptyArticles);
 
         // then
         assertThatThrownBy(() -> {
@@ -172,11 +175,9 @@ public class ArticleServiceTests {
         // given
         Pageable pageable = PageRequest.of(0, 10);
         PageDTO pageDTO = PageDTO.builder().tag("title").keyword("keyword").build();
-        List<Article> blank = new ArrayList<>();
-        Page<Article> fakeBlankArticles = new PageImpl<>(blank);
 
         // when
-        when(articleRepository.findAllByTitleContainsIgnoreCase(anyString(), any(Pageable.class))).thenReturn(fakeBlankArticles);
+        when(articleRepository.findAllByTitleContainsIgnoreCase(anyString(), any(Pageable.class))).thenReturn(emptyArticles);
 
         // then
         assertThatThrownBy(() -> {
@@ -306,7 +307,7 @@ public class ArticleServiceTests {
      * Test success case for updateView() method.
      */
     @Test
-    void should_CalledUpdateViewByIdOneTimes_When_UpdateViewAndSucceed() {
+    void should_CalledUpdateViewByIdOneTimes_When_UpdateViewIsCalledAndSucceed() {
         // given
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();

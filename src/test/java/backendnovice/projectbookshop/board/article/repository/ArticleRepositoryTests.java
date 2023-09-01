@@ -13,7 +13,6 @@
 package backendnovice.projectbookshop.board.article.repository;
 
 import backendnovice.projectbookshop.board.article.domain.Article;
-import backendnovice.projectbookshop.board.article.repository.ArticleRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -25,8 +24,8 @@ import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.*;
 
-@DataJpaTest                                    // Load jpa related settings, include in memory db, transactional.
-@TestInstance(TestInstance.Lifecycle.PER_CLASS) // Change lifecycle per class. to use @BeforeAll, @AfterAll correctly.
+@DataJpaTest // Load jpa related settings, include in memory db, transactional.
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ArticleRepositoryTests {
     @Autowired
     private ArticleRepository articleRepository;
@@ -35,7 +34,7 @@ public class ArticleRepositoryTests {
      * Initialize before all tests. initialize with 1 ~ 50 fake article.
      */
     @BeforeAll
-    void initializeBeforeAllTests() {
+    void initialize() {
         IntStream.rangeClosed(1, 50).forEach(i -> {
             Article article = Article.builder()
                     .title("Title #" + i)
@@ -45,14 +44,6 @@ public class ArticleRepositoryTests {
 
             articleRepository.save(article);
         });
-    }
-
-    /**
-     * finalize after all tests. delete all repository data.
-     */
-    @AfterAll
-    void finalizeAfterAllTests() {
-        articleRepository.deleteAll();
     }
 
     /**
@@ -77,7 +68,7 @@ public class ArticleRepositoryTests {
      * Test article select query method with title on failure.
      */
     @Test
-    void should_ReturnArticleTypePageObject_When_FindAllByTitleContainsIgnoreCaseIsCalledAndFailed() {
+    void should_ReturnEmptyObject_When_FindAllByTitleContainsIgnoreCaseIsCalledAndFailed() {
         // given
         Pageable pageable = PageRequest.of(0, 10);
         String title = "wrong";
@@ -111,7 +102,7 @@ public class ArticleRepositoryTests {
      * Test article select query method with content on failure.
      */
     @Test
-    void should_ReturnArticleTypePageObject_When_FindAllByContentContainsIgnoreCaseIsCalledAndFailed() {
+    void should_ReturnEmptyObject_When_FindAllByContentContainsIgnoreCaseIsCalledAndFailed() {
         // given
         Pageable pageable = PageRequest.of(0, 10);
         String content = "wrong";
@@ -145,7 +136,7 @@ public class ArticleRepositoryTests {
      * Test article select query method with writer on failure.
      */
     @Test
-    void should_ReturnArticleTypePageObject_When_FindAllByWriterContainsIgnoreCaseIsCalledAndFailed() {
+    void should_ReturnEmptyObject_When_FindAllByWriterContainsIgnoreCaseIsCalledAndFailed() {
         // given
         Pageable pageable = PageRequest.of(0, 10);
         String writer = "wrong";
@@ -170,7 +161,7 @@ public class ArticleRepositoryTests {
         articleRepository.updateViewsById(id);
 
         // then
-        Article article = articleRepository.findById(id).orElseGet(null);
+        Article article = articleRepository.findById(id).get();
         assertThat(article.getViews()).isGreaterThan(0);
     }
 }

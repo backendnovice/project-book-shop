@@ -12,6 +12,7 @@ import backendnovice.projectbookshop.board.comment.domain.Comment;
 import backendnovice.projectbookshop.board.comment.dto.CommentDTO;
 import backendnovice.projectbookshop.board.comment.repository.CommentRepository;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,7 +34,6 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class CommentServiceTests {
     @Mock
     private CommentRepository commentRepository;
@@ -46,9 +46,9 @@ public class CommentServiceTests {
     private Page<Comment> emptyComments;
 
     /**
-     * Initialize before all tests. initialize "fakeComments" and "emptyComments".
+     * Initialize before each test. initialize "fakeComments" and "emptyComments".
      */
-    @BeforeAll
+    @BeforeEach
     void initialize() {
         List<Comment> commentList = new ArrayList<>();
         commentList.add(new Comment());

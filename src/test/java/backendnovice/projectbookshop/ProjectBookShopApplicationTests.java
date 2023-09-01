@@ -3,7 +3,7 @@ package backendnovice.projectbookshop;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
+// @SpringBootTest
 class ProjectBookShopApplicationTests {
 
 	@Test

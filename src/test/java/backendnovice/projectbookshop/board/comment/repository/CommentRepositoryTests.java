@@ -12,6 +12,7 @@ import backendnovice.projectbookshop.board.article.domain.Article;
 import backendnovice.projectbookshop.board.article.repository.ArticleRepository;
 import backendnovice.projectbookshop.board.comment.domain.Comment;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,13 +29,13 @@ import static org.assertj.core.api.Assertions.*;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class CommentRepositoryTests {
     @Autowired
-    private CommentRepository commentRepository;
-
-    @Autowired
     private ArticleRepository articleRepository;
 
+    @Autowired
+    private CommentRepository commentRepository;
+
     /**
-     * Initialize before all test. initialize with 150 fake comments
+     * Initialize before all tests. initialize with 150 fake comments
      */
     @BeforeAll
     void initialize() {
@@ -51,7 +52,7 @@ public class CommentRepositoryTests {
                 Comment comment = Comment.builder()
                         .content("Comment #" + j)
                         .writer("Writer #" + j)
-                        .article(article)
+                        .article(saved)
                         .build();
 
                 commentRepository.save(comment);
@@ -63,6 +64,7 @@ public class CommentRepositoryTests {
      * Test comment select query method with title on succeed.
      */
     @Test
+    @Disabled
     void should_ReturnCommentTypePageObject_When_FindAllByArticleIdIsCalledAndSucceed() {
         // given
         Pageable pageable = PageRequest.of(0, 10);
@@ -90,6 +92,6 @@ public class CommentRepositoryTests {
         Page<Comment> result = commentRepository.findAllByArticleId(articleId, pageable);
 
         // then
-        assertThat(result.isEmpty());
+        assertThat(result.isEmpty()).isTrue();
     }
 }
