@@ -1,9 +1,8 @@
 /**
- * @author    : backendnovice@gmail.com
- * @date      : 2023-08-30
- * @desc      : CommentApiController test class.
- * @changelog :
- * 2023-08-30 - backendnovice@gmail.com - create new file.
+ * @author   : backendnovice@gmail.com
+ * @created  : 2023-08-30
+ * @modified : 2023-09-04
+ * @desc     : CommentApiController test class.
  */
 
 package backendnovice.projectbookshop.board.comment.controller;

@@ -1,9 +1,8 @@
 /**
- * @author    : backendnovice@gmail.com
- * @date      : 2023-08-30
- * @desc      : CommentService test class.
- * @changelog :
- * 2023-08-30 - backendnovice@gmail.com - create new file.
+ * @author   : backendnovice@gmail.com
+ * @created  : 2023-08-30
+ * @modified : 2023-09-04
+ * @desc     : CommentService test class.
  */
 
 package backendnovice.projectbookshop.board.comment.service;
@@ -11,10 +10,8 @@ package backendnovice.projectbookshop.board.comment.service;
 import backendnovice.projectbookshop.board.comment.domain.Comment;
 import backendnovice.projectbookshop.board.comment.dto.CommentDTO;
 import backendnovice.projectbookshop.board.comment.repository.CommentRepository;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;

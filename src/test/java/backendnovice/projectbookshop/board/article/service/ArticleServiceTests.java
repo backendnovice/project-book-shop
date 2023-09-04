@@ -1,16 +1,8 @@
 /**
- * @author    : backendnovice@gmail.com
- * @date      : 2023-08-24
- * @desc      : ArticleService test class.
- * @changelog :
- * 2023-07-25 - backendnovice@gmail.com - create new file.
- * 2023-07-26 - backendnovice@gmail.com - add search, write tests.
- * 2023-07-29 - backendnovice@gmail.com - modify search tests.
- * 2023-07-30 - backendnovice@gmail.com - add modify, delete tests.
- * 2023-08-01 - backendnovice@gmail.com - add update view count test.
- * 2023-08-13 - backendnovice@gmail.com - change filename to ArticleRepositoryTests.
- * 2023-08-17 - backendnovice@gmail.com - add description annotation.
- * 2023-08-24 - backendnovice@gmail.com - fix all test.
+ * @author   : backendnovice@gmail.com
+ * @created  : 2023-07-25
+ * @modified : 2023-09-04
+ * @desc     : ArticleService test class.
  */
 
 package backendnovice.projectbookshop.board.article.service;
@@ -24,8 +16,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -51,19 +41,23 @@ public class ArticleServiceTests {
     @InjectMocks
     private ArticleServiceImpl articleService;
 
-    private Page<Article> fakeArticles;
+    private Page<Object[]> fakeResult;
 
-    private Page<Article> emptyArticles;
+    private Page<Object[]> emptyResult;
 
     /**
      * Initialize before each test. initialize "fakeArticles".
      */
     @BeforeEach
     void initialize() {
-        List<Article> fakeArticleList = new ArrayList<>();
-        fakeArticleList.add(new Article());
-        fakeArticles = new PageImpl<>(fakeArticleList);
-        emptyArticles = Page.empty();
+        // Initialize fake result.
+        List<Object[]> fakeArticles = new ArrayList<>();
+        Object[] fakeData = new Object[]{new Article(), 1};
+        fakeArticles.add(fakeData);
+        fakeResult = new PageImpl<>(fakeArticles);
+
+        // Initialize empty result.
+        emptyResult = Page.empty();
     }
 
     /**
@@ -75,7 +69,7 @@ public class ArticleServiceTests {
         Pageable pageable = PageRequest.of(0, 10);
 
         // when
-        when(articleRepository.findAll(any(Pageable.class))).thenReturn(fakeArticles);
+        when(articleRepository.findAllWithCommentCount(any(Pageable.class))).thenReturn(fakeResult);
 
         // then
         Page<ArticleDTO> result = articleService.searchAll(pageable);
@@ -91,7 +85,7 @@ public class ArticleServiceTests {
         Pageable pageable = PageRequest.of(0, 10);
 
         // when
-        when(articleRepository.findAll(any(Pageable.class))).thenReturn(emptyArticles);
+        when(articleRepository.findAllWithCommentCount(any(Pageable.class))).thenReturn(emptyResult);
 
         // then
         assertThatThrownBy(() -> {
@@ -109,7 +103,7 @@ public class ArticleServiceTests {
         PageDTO pageDTO = PageDTO.builder().tag("title").keyword("keyword").build();
 
         // when
-        when(articleRepository.findAllByTitleContainsIgnoreCase(anyString(), any(Pageable.class))).thenReturn(fakeArticles);
+        when(articleRepository.findAllByTitleWithCommentCount(anyString(), any(Pageable.class))).thenReturn(fakeResult);
 
         // then
         Page<ArticleDTO> result = articleService.searchByTags(pageDTO, pageable);
@@ -126,7 +120,7 @@ public class ArticleServiceTests {
         PageDTO pageDTO = PageDTO.builder().tag("content").keyword("keyword").build();
 
         // when
-        when(articleRepository.findAllByContentContainsIgnoreCase(anyString(), any(Pageable.class))).thenReturn(fakeArticles);
+        when(articleRepository.findAllByContentWithCommentCount(anyString(), any(Pageable.class))).thenReturn(fakeResult);
 
         // then
         Page<ArticleDTO> result = articleService.searchByTags(pageDTO, pageable);
@@ -143,7 +137,7 @@ public class ArticleServiceTests {
         PageDTO pageDTO = PageDTO.builder().tag("writer").keyword("keyword").build();
 
         // when
-        when(articleRepository.findAllByWriterContainsIgnoreCase(anyString(), any(Pageable.class))).thenReturn(fakeArticles);
+        when(articleRepository.findAllByWriterWithCommentCount(anyString(), any(Pageable.class))).thenReturn(fakeResult);
 
         // then
         Page<ArticleDTO> result = articleService.searchByTags(pageDTO, pageable);
@@ -177,7 +171,7 @@ public class ArticleServiceTests {
         PageDTO pageDTO = PageDTO.builder().tag("title").keyword("keyword").build();
 
         // when
-        when(articleRepository.findAllByTitleContainsIgnoreCase(anyString(), any(Pageable.class))).thenReturn(emptyArticles);
+        when(articleRepository.findAllByTitleWithCommentCount(anyString(), any(Pageable.class))).thenReturn(emptyResult);
 
         // then
         assertThatThrownBy(() -> {

@@ -1,9 +1,8 @@
 /**
- * @author    : backendnovice@gmail.com
- * @date      : 2023-08-30
- * @desc      : CommentRepository test class.
- * @changelog :
- * 2023-08-30 - backendnovice@gmail.com - create new file.
+ * @author   : backendnovice@gmail.com
+ * @created  : 2023-08-30
+ * @modified : 2023-09-04
+ * @desc     : CommentRepository test class.
  */
 
 package backendnovice.projectbookshop.board.comment.repository;

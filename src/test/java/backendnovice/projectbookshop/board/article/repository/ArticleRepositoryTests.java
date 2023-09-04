@@ -1,13 +1,8 @@
 /**
- * @author    : backendnovice@gmail.com
- * @date      : 2023-08-24
- * @desc      : ArticleRepository test class.
- * @changelog :
- * 2023-07-25 - backendnovice@gmail.com - create new file.
- * 2023-08-01 - backendnovice@gmail.com - add update view count test.
- * 2023-08-13 - backendnovice@gmail.com - change filename to ArticleRepositoryTests.
- * 2023-08-17 - backendnovice@gmail.com - add description annotation.
- * 2023-08-24 - backendnovice@gmail.com - apply method naming convention.
+ * @author   : backendnovice@gmail.com
+ * @created  : 2023-07-25
+ * @modified : 2023-09-04
+ * @desc     : ArticleRepository test class.
  */
 
 package backendnovice.projectbookshop.board.article.repository;
@@ -46,17 +41,32 @@ public class ArticleRepositoryTests {
         });
     }
 
+    @Test
+    void should_ReturnPageTypeObjectIncludingArticleAndCommentCount_When_FindAllWithCommentCountIsCalledAndSucceed() {
+        // given
+        Pageable pageable = PageRequest.of(0, 10);
+
+        // when
+        Page<Object[]> result = articleRepository.findAllWithCommentCount(pageable);
+
+        // then
+        assertThat(result.isEmpty()).isFalse();
+        assertThat(result.getTotalPages()).isEqualTo(5);
+        assertThat(result.getTotalElements()).isEqualTo(50);
+
+    }
+
     /**
      * Test article select query method with title on succeed.
      */
     @Test
-    void should_ReturnArticleTypePageObject_When_FindAllByTitleContainsIgnoreCaseIsCalledAndSucceed() {
+    void should_ReturnPageTypeObjectIncludingArticleAndCommentCount_When_FindAllByTitleWithCommentCountIsCalledAndSucceed() {
         // given
         Pageable pageable = PageRequest.of(0, 10);
         String title = "title";
 
         // when
-        Page<Article> result = articleRepository.findAllByTitleContainsIgnoreCase(title, pageable);
+        Page<Object[]> result = articleRepository.findAllByTitleWithCommentCount(title, pageable);
 
         // then
         assertThat(result.isEmpty()).isFalse();
@@ -68,13 +78,13 @@ public class ArticleRepositoryTests {
      * Test article select query method with title on failure.
      */
     @Test
-    void should_ReturnEmptyObject_When_FindAllByTitleContainsIgnoreCaseIsCalledAndFailed() {
+    void should_ReturnEmptyObject_When_FindAllByTitleWithCommentCountIsCalledAndFailed() {
         // given
         Pageable pageable = PageRequest.of(0, 10);
         String title = "wrong";
 
         // when
-        Page<Article> result = articleRepository.findAllByTitleContainsIgnoreCase(title, pageable);
+        Page<Object[]> result = articleRepository.findAllByTitleWithCommentCount(title, pageable);
 
         // then
         assertThat(result.isEmpty()).isTrue();
@@ -84,13 +94,13 @@ public class ArticleRepositoryTests {
      * Test article select query method with content on succeed.
      */
     @Test
-    void should_ReturnArticleTypePageObject_When_FindAllByContentContainsIgnoreCaseIsCalledAndSucceed() {
+    void should_ReturnPageTypeObjectIncludingArticleAndCommentCount_When_FindAllByContentWithCommentCountIsCalledAndSucceed() {
         // given
         Pageable pageable = PageRequest.of(0, 10);
         String content = "content";
 
         // when
-        Page<Article> result = articleRepository.findAllByContentContainsIgnoreCase(content, pageable);
+        Page<Object[]> result = articleRepository.findAllByContentWithCommentCount(content, pageable);
 
         // then
         assertThat(result.isEmpty()).isFalse();
@@ -102,13 +112,13 @@ public class ArticleRepositoryTests {
      * Test article select query method with content on failure.
      */
     @Test
-    void should_ReturnEmptyObject_When_FindAllByContentContainsIgnoreCaseIsCalledAndFailed() {
+    void should_ReturnEmptyObject_When_FindAllByContentWithCommentCountIsCalledAndFailed() {
         // given
         Pageable pageable = PageRequest.of(0, 10);
         String content = "wrong";
 
         // when
-        Page<Article> result = articleRepository.findAllByContentContainsIgnoreCase(content, pageable);
+        Page<Object[]> result = articleRepository.findAllByContentWithCommentCount(content, pageable);
 
         // then
         assertThat(result.isEmpty()).isTrue();
@@ -118,13 +128,13 @@ public class ArticleRepositoryTests {
      * Test article select query method with writer on succeed.
      */
     @Test
-    void should_ReturnArticleTypePageObject_When_FindAllByWriterContainsIgnoreCaseIsCalledAndSucceed() {
+    void should_ReturnPageTypeObjectIncludingArticleAndCommentCount_When_FindAllByWriterWithCommentCountIsCalledAndSucceed() {
         // given
         Pageable pageable = PageRequest.of(0, 10);
         String writer = "writer";
 
         // when
-        Page<Article> result = articleRepository.findAllByWriterContainsIgnoreCase(writer, pageable);
+        Page<Object[]> result = articleRepository.findAllByWriterWithCommentCount(writer, pageable);
 
         // then
         assertThat(result.isEmpty()).isFalse();
@@ -136,13 +146,13 @@ public class ArticleRepositoryTests {
      * Test article select query method with writer on failure.
      */
     @Test
-    void should_ReturnEmptyObject_When_FindAllByWriterContainsIgnoreCaseIsCalledAndFailed() {
+    void should_ReturnEmptyObject_When_FindAllByWriterWithCommentCountIsCalledAndFailed() {
         // given
         Pageable pageable = PageRequest.of(0, 10);
         String writer = "wrong";
 
         // when
-        Page<Article> result = articleRepository.findAllByWriterContainsIgnoreCase(writer, pageable);
+        Page<Object[]> result = articleRepository.findAllByWriterWithCommentCount(writer, pageable);
 
         // then
         assertThat(result.isEmpty()).isTrue();

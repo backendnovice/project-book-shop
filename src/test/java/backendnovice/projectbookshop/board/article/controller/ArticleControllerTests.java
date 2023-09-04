@@ -1,17 +1,12 @@
 /**
- * @author    : backendnovice@gmail.com
- * @date      : 2023-08-23
- * @desc      : ArticleController test class.
- * @changelog :
- * 2023-08-01 - backendnovice@gmail.com - create new file.
- * 2023-08-13 - backendnovice@gmail.com - change filename to ArticleControllerTests.
- * 2023-08-17 - backendnovice@gmail.com - add description annotation.
- * 2023-08-23 - backendnovice@gmail.com - fix all test.
+ * @author   : backendnovice@gmail.com
+ * @created  : 2023-08-01
+ * @modified : 2023-09-04
+ * @desc     : ArticleController test class.
  */
 
 package backendnovice.projectbookshop.board.article.controller;
 
-import backendnovice.projectbookshop.board.article.controller.ArticleController;
 import backendnovice.projectbookshop.board.article.dto.ArticleDTO;
 import backendnovice.projectbookshop.global.dto.PageDTO;
 import backendnovice.projectbookshop.board.article.service.ArticleService;
