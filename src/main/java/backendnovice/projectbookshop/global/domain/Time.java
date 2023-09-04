@@ -1,10 +1,8 @@
 /**
- * @author    : backendnovice@gmail.com
- * @date      : 2023-08-16
- * @desc      : An common-related entity class. that provide time-related columns to multiple entity classes.
- * @changelog :
- * 2023-07-25 - backendnovice@gmail.com - create new file.
- * 2023-08-16 - backendnovice@gmail.com - add description annotation.
+ * @author   : backendnovice@gmail.com
+ * @created  : 2023-07-25
+ * @modified : 2023-09-04
+ * @desc     : An common-related entity class. that provide time-related columns to multiple entity classes.
  */
 
 package backendnovice.projectbookshop.global.domain;

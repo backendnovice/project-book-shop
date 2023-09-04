@@ -1,18 +1,8 @@
 /**
- * @author    : backendnovice@gmail.com
- * @date      : 2023-08-23
- * @desc      : An article-related controller class. that maps URIs to handle requests from the view layer.
- * @changelog :
- * 2023-07-25 - backendnovice@gmail.com - create new file.
- * 2023-07-28 - backendnovice@gmail.com - add search, write handle method.
- * 2023-07-29 - backendnovice@gmail.com - modify search handle method.
- * 2023-07-30 - backendnovice@gmail.com - add modify, delete handle method.
- *                                      - modify write handle method.
- * 2023-08-01 - backendnovice@gmail.com - add update view in read handle method.
- * 2023-08-13 - backendnovice@gmail.com - change filename to ArticleController.
- * 2023-08-16 - backendnovice@gmail.com - add description annotation.
- * 2023-08-22 - backendnovice@gmail.com - refactoring & apply execption handling.
- * 2023-08-23 - backendnovice@gmail.com - fix redirection issue.
+ * @author   : backendnovice@gmail.com
+ * @created  : 2023-07-25
+ * @modified : 2023-09-04
+ * @desc     : An article-related controller class. that maps URIs to handle requests from the view layer.
  */
 
 package backendnovice.projectbookshop.board.article.controller;

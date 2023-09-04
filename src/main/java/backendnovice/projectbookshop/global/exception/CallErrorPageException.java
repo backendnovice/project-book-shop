@@ -1,9 +1,8 @@
 /**
- * @author    : backendnovice@gmail.com
- * @date      : 2023-08-22
- * @desc      : Custom exception class. that can be throwable when error page call is required.
- * @changelog :
- * 2023-08-21 - backendnovice@gmail.com - create new file.
+ * @author   : backendnovice@gmail.com
+ * @created  : 2023-08-21
+ * @modified : 2023-09-04
+ * @desc     : Custom exception class. that can be throwable when error page call is required.
  */
 
 package backendnovice.projectbookshop.global.exception;

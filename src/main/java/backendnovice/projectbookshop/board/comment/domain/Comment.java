@@ -1,11 +1,8 @@
 /**
- * @author    : backendnovice@gmail.com
- * @date      : 2023-08-22
- * @desc      : A comment-related entity class. that manage columns for Comment table.
- * @changelog :
- * 2023-08-20 - backendnovice@gmail.com - create new file.
- * 2023-08-21 - backendnovice@gmail.com - rename columns & add article relations.
- * 2023-08-22 - backendnovice@gmail.com - add setter annotation.
+ * @author   : backendnovice@gmail.com
+ * @created  : 2023-08-20
+ * @modified : 2023-09-04
+ * @desc     : A comment-related entity class. that manage columns for Comment table.
  */
 
 package backendnovice.projectbookshop.board.comment.domain;
@@ -39,8 +36,9 @@ public class Comment extends Time {
     private Article article;
 
     @Builder
-    public Comment(String content, String writer) {
+    public Comment(String content, String writer, Article article) {
         this.content = content;
         this.writer = writer;
+        this.article = article;
     }
 }

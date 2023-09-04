@@ -1,17 +1,8 @@
 /**
- * @author    : backendnovice@gmail.com
- * @date      : 2023-08-22
- * @desc      : An article-related service interface. that define business logic for article.
- * @changelog :
- * 2023-07-25 - backendnovice@gmail.com - create new file.
- * 2023-07-26 - backendnovice@gmail.com - integrate search method.
- * 2023-07-29 - backendnovice@gmail.com - rename search method.
- * 2023-07-30 - backendnovice@gmail.com - add write, modify, delete method.
- * 2023-08-01 - backendnovice@gmail.com - add update view count method.
- * 2023-08-13 - backendnovice@gmail.com - change filename to ArticleService.
- * 2023-08-16 - backendnovice@gmail.com - add description annotation.
- * 2023-08-21 - backendnovice@gmail.com - add method description annotation.
- * 2023-08-22 - backendnovice@gmail.com - separate search method.
+ * @author   : backendnovice@gmail.com
+ * @created  : 2023-07-25
+ * @modified : 2023-09-04
+ * @desc     : An article-related service interface. that define business logic for article.
  */
 
 package backendnovice.projectbookshop.board.article.service;

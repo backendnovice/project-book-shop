@@ -1,19 +1,8 @@
 /**
- * @author    : backendnovice@gmail.com
- * @date      : 2023-08-22
- * @desc      : An article-related service implementation class. that actually implement business logic for article.
- * @changelog :
- * 2023-07-25 - backendnovice@gmail.com - create new file.
- * 2023-07-26 - backendnovice@gmail.com - integrate search method.
- * 2023-07-29 - backendnovice@gmail.com - rename search method.
- * 2023-07-30 - backendnovice@gmail.com - add write, modify, delete method.
- * 2023-08-01 - backendnovice@gmail.com - add update view count method.
- * 2023-08-13 - backendnovice@gmail.com - change filename to ArticleServiceImpl.
- *                                      - add prevent double hit cookie method.
- * 2023-08-16 - backendnovice@gmail.com - add description annotation.
- * 2023-08-17 - backendnovice@gmail.com - add exception handling.
- * 2023-08-21 - backendnovice@gmail.com - remove override description annotation.
- * 2023-08-22 - backendnovice@gmail.com - separate search method & modify exception handling.
+ * @author   : backendnovice@gmail.com
+ * @created  : 2023-07-25
+ * @modified : 2023-09-04
+ * @desc     : An article-related service implementation class. that actually implement business logic for article.
  */
 
 package backendnovice.projectbookshop.board.article.service;
@@ -38,6 +27,7 @@ import java.util.NoSuchElementException;
 @Service
 public class ArticleServiceImpl implements ArticleService {
     private final String COOKIE_NAME = "COOKIE_VIEWED";
+
     private final ArticleRepository articleRepository;
 
     public ArticleServiceImpl(ArticleRepository articleRepository) {
@@ -46,13 +36,13 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public Page<ArticleDTO> searchAll(Pageable pageable) {
-        Page<Article> result = articleRepository.findAll(pageable);
+        Page<Object[]> result = articleRepository.findAllWithCommentCount(pageable);
 
         if(result.isEmpty()) {
             throw new NoSuchElementException();
         }
 
-        return result.map(this::convertToDTO);
+        return result.map(this::convertObjectToDTO);
     }
 
     @Override
@@ -69,10 +59,6 @@ public class ArticleServiceImpl implements ArticleService {
             result = searchWithWriter(keyword, pageable);
         }else {
             throw new IllegalArgumentException();
-        }
-
-        if(result.isEmpty()) {
-            throw new NoSuchElementException();
         }
 
         return result;
@@ -124,7 +110,7 @@ public class ArticleServiceImpl implements ArticleService {
         if(!isCookieExists) {
             Cookie newCookie = createDoubleHitPreventionCookie(articleId);
             response.addCookie(newCookie);
-            articleRepository.updateViewById(articleId);
+            articleRepository.updateViewsById(articleId);
         }
     }
 
@@ -138,7 +124,13 @@ public class ArticleServiceImpl implements ArticleService {
      *      Page object that include found articles.
      */
     private Page<ArticleDTO> searchWithTitle(String title, Pageable pageable) {
-        return articleRepository.findAllByTitleContainsIgnoreCase(title, pageable).map(this::convertToDTO);
+        Page<Object[]> result = articleRepository.findAllByTitleWithCommentCount(title, pageable);
+
+        if(result.isEmpty()) {
+            throw new NoSuchElementException();
+        }
+
+        return result.map(this::convertObjectToDTO);
     }
 
     /**
@@ -151,7 +143,13 @@ public class ArticleServiceImpl implements ArticleService {
      *      Page object that include found articles.
      */
     private Page<ArticleDTO> searchWithContent(String content, Pageable pageable) {
-        return articleRepository.findAllByContentContainsIgnoreCase(content, pageable).map(this::convertToDTO);
+        Page<Object[]> result = articleRepository.findAllByContentWithCommentCount(content, pageable);
+
+        if(result.isEmpty()) {
+            throw new NoSuchElementException();
+        }
+
+        return result.map(this::convertObjectToDTO);
     }
 
     /**
@@ -164,7 +162,13 @@ public class ArticleServiceImpl implements ArticleService {
      *      Page object that include found articles.
      */
     private Page<ArticleDTO> searchWithWriter(String writer, Pageable pageable) {
-        return articleRepository.findAllByWriterContainsIgnoreCase(writer, pageable).map(this::convertToDTO);
+        Page<Object[]> result = articleRepository.findAllByWriterWithCommentCount(writer, pageable);
+
+        if(result.isEmpty()) {
+            throw new NoSuchElementException();
+        }
+
+        return result.map(this::convertObjectToDTO);
     }
 
     /**
@@ -180,6 +184,28 @@ public class ArticleServiceImpl implements ArticleService {
                 .title(article.getTitle())
                 .content(article.getContent())
                 .writer(article.getWriter())
+                .date(article.getModifiedDate())
+                .build();
+    }
+
+    /**
+     * Convert Object[] including Article and commentCount to ArticleDTO.
+     * @param object
+     *      Object[] for convert.
+     * @return
+     *      Converted ArticleDTO object.
+     */
+    private ArticleDTO convertObjectToDTO(Object[] object) {
+        Article article = (Article) object[0];
+        int commentCount = (int) object[1];
+
+        return ArticleDTO.builder()
+                .id(article.getId())
+                .title(article.getTitle())
+                .content(article.getContent())
+                .writer(article.getWriter())
+                .views(article.getViews())
+                .commentCount(commentCount)
                 .date(article.getModifiedDate())
                 .build();
     }

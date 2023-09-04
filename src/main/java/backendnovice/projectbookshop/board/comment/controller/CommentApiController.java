@@ -1,11 +1,8 @@
 /**
- * @author    : backendnovice@gmail.com
- * @date      : 2023-08-21
- * @desc      : An article-related controller class. that provide API when received requests from the view layer.
- * @changelog :
- * 2023-08-20 - backendnovice@gmail.com - create new file.
- * 2023-08-21 - backendnovice@gmail.com - add write, delete handle methods.
- * 2023-08-22 - backendnovice@gmail.com - apply exception handling.
+ * @author   : backendnovice@gmail.com
+ * @created  : 2023-08-20
+ * @modified : 2023-09-04
+ * @desc     : An article-related controller class. that provide API when received requests from the view layer.
  */
 
 package backendnovice.projectbookshop.board.comment.controller;
@@ -13,15 +10,15 @@ package backendnovice.projectbookshop.board.comment.controller;
 import backendnovice.projectbookshop.board.comment.dto.CommentDTO;
 import backendnovice.projectbookshop.board.comment.service.CommentService;
 import backendnovice.projectbookshop.global.dto.ResponseDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping("/board/api/v1")
+@RequestMapping("/board/api/v1/comment")
 public class CommentApiController {
     private final CommentService commentService;
 
@@ -29,25 +26,46 @@ public class CommentApiController {
         this.commentService = commentService;
     }
 
+    private String message;
+
     /**
      * Call comment service method to process register new comment.
      * @param commentDTO
      *      Comment data transfer object.
      * @return
-     *      Response data transfer object. that includes result message.
+     *      Response data transfer object, that includes result message.
      */
     @PostMapping("/write")
     public ResponseDTO<?> write(CommentDTO commentDTO) {
-        String message;
-
-        if(commentDTO == null) {
+        if(commentDTO.getContent() == null || commentDTO.getWriter() == null) {
             message = "cannot register comment with null data.";
         }else {
             commentService.write(commentDTO);
-            message = "comment registration succeeded.";
+            message = "comment registration succeed.";
         }
 
         return ResponseDTO.of(HttpStatus.OK.value(), message, null);
+    }
+
+    /**
+     * Call comment service method to process select comments by article id.
+     * @param articleId
+     *      Article id.
+     * @param pageable
+     *      Comment pageable object.
+     * @return
+     *      Response data transfer object, that includes result message and data.
+     */
+    @GetMapping("/read")
+    public ResponseDTO<?> read(@RequestParam(value = "id", required = false) Long articleId, Pageable pageable) {
+        if(articleId == null) {
+            message = "cannot read comment with null data.";
+            return ResponseDTO.of(HttpStatus.OK.value(), message, null);
+        }else {
+            message = "comment selection succeed.";
+            Page<CommentDTO> comments = commentService.getComments(articleId, pageable);
+            return ResponseDTO.of(HttpStatus.OK.value(), message, comments);
+        }
     }
 
     /**
@@ -55,13 +73,11 @@ public class CommentApiController {
      * @param commentDTO
      *      Comment data transfer object.
      * @return
-     *      Response data transfer object. that includes result message.
+     *      Response data transfer object, that includes result message.
      */
     @PostMapping("/modify")
     public ResponseDTO<?> modify(CommentDTO commentDTO) {
-        String message;
-
-        if(commentDTO == null) {
+        if(commentDTO.getContent() == null || commentDTO.getWriter() == null) {
             message = "cannot modify comment with null data.";
         }else {
             try {
@@ -83,9 +99,7 @@ public class CommentApiController {
      *      Throwable exception when no comment found to delete.
      */
     @PostMapping("/delete")
-    public ResponseDTO<?> delete(Long commentId) {
-        String message;
-
+    public ResponseDTO<?> delete(@RequestParam(value = "id", required = false) Long commentId) {
         if(commentId == null) {
             message = "cannot delete comment with null id.";
         }else {

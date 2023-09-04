@@ -1,14 +1,8 @@
 /**
- * @author    : backendnovice@gmail.com
- * @date      : 2023-08-21
- * @desc      : An article-related entity class. that manage columns for Article table.
- * @changelog :
- * 2023-07-25 - backendnovice@gmail.com - create new file.
- * 2023-07-30 - backendnovice@gmail.com - add setter annotation.
- * 2023-08-01 - backendnovice@gmail.com - add setter annotation.
- * 2023-08-13 - backendnovice@gmail.com - change filename to Article.
- * 2023-08-16 - backendnovice@gmail.com - add description annotation.
- * 2023-08-21 - backendnovice@gmail.com - rename columns & add comment relations.
+ * @author   : backendnovice@gmail.com
+ * @created  : 2023-07-25
+ * @modified : 2023-09-04
+ * @desc     : An article-related entity class. that manage columns for Article table.
  */
 
 package backendnovice.projectbookshop.board.article.domain;
@@ -21,7 +15,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -47,13 +40,14 @@ public class Article extends Time {
     @Column(name = "ARTICLE_VIEWS", columnDefinition = "INTEGER DEFAULT 0", nullable = false)
     private int views;
 
-    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
-    private List<Comment> comments = new ArrayList<>();
+    @OneToMany(mappedBy = "article", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<Comment> comments;
 
     @Builder
-    public Article(String title, String content, String writer) {
+    public Article(String title, String content, String writer, List<Comment> comments) {
         this.title = title;
         this.content = content;
         this.writer = writer;
+        this.comments = comments;
     }
 }

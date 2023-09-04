@@ -1,9 +1,8 @@
 /**
- * @author    : backendnovice@gmail.com
- * @date      : 2023-08-22
- * @desc      : A common data transfer object class for response.
- * @changelog :
- * 2023-08-22 - backendnovice@gmail.com - create new file.
+ * @author   : backendnovice@gmail.com
+ * @created  : 2023-08-22
+ * @modified : 2023-09-04
+ * @desc     : A common data transfer object class for response.
  */
 
 package backendnovice.projectbookshop.global.dto;
@@ -11,7 +10,6 @@ package backendnovice.projectbookshop.global.dto;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.springframework.http.HttpStatus;
 
 @Getter
 @Setter

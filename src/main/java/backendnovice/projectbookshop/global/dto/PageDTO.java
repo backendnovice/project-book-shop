@@ -1,12 +1,8 @@
 /**
- * @author    : backendnovice@gmail.com
- * @date      : 2023-08-16
- * @desc      : A page-related data transfer object class. that used to books and articles.
- * @changelog :
- * 2023-07-29 - backendnovice@gmail.com - create new file.
- * 2023-08-01 - backendnovice@gmail.com - add constructor paged condition check.
- * 2023-08-16 - backendnovice@gmail.com - add description annotation.
- *                                      - change filename to PageDTO.
+ * @author   : backendnovice@gmail.com
+ * @created  : 2023-07-29
+ * @modified : 2023-09-04
+ * @desc     : A page-related data transfer object class. that used to books and articles.
  */
 
 package backendnovice.projectbookshop.global.dto;
@@ -46,6 +42,4 @@ public class PageDTO {
             this.finalPage = 0;
         }
     }
-
-
 }

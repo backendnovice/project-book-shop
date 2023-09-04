@@ -1,10 +1,8 @@
 /**
- * @author    : backendnovice@gmail.com
- * @date      : 2023-08-22
- * @desc      : A global-area exception handler class.
- * @changelog :
- * 2023-08-17 - backendnovice@gmail.com - create new file.
- * 2023-08-22 - backendnovice@gmail.com - handle CallErrorPageException.
+ * @author   : backendnovice@gmail.com
+ * @created  : 2023-08-17
+ * @modified : 2023-09-04
+ * @desc     : A global-area exception handler class.
  */
 
 package backendnovice.projectbookshop.global.exception;

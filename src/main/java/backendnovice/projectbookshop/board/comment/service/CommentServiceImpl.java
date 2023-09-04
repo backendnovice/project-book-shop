@@ -1,11 +1,8 @@
 /**
- * @author    : backendnovice@gmail.com
- * @date      : 2023-08-21
- * @desc      : A comment-related service implementation class. that actually implement business logic for comment.
- * @changelog :
- * 2023-08-20 - backendnovice@gmail.com - create new file.
- * 2023-08-21 - backendnovice@gmail.com - add write, delete method.
- * 2023-08-22 - backendnovice@gmail.com - modify exception handling.
+ * @author   : backendnovice@gmail.com
+ * @created  : 2023-08-20
+ * @modified : 2023-09-04
+ * @desc     : A comment-related service implementation class. that actually implement business logic for comment.
  */
 
 package backendnovice.projectbookshop.board.comment.service;
@@ -31,7 +28,13 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public Page<CommentDTO> getComments(Long articleId, Pageable pageable) {
-        return commentRepository.findAllByArticleId(articleId, pageable).map(this::convertToDTO);
+        Page<Comment> result = commentRepository.findAllByArticleId(articleId, pageable);
+
+        if(result.isEmpty()) {
+            throw new NoSuchElementException();
+        }
+
+        return result.map(this::convertToDTO);
     }
 
     @Override

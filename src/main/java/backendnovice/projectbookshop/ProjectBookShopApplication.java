@@ -1,11 +1,8 @@
 /**
- * @author      : backendnovice@gmail.com
- * @date        : 2023-08-16
- * @desc        : Main class for execute spring boot application.
- * @changelog   :
- * 2023-07-25 - backendnovice@gmail.com - created by spring initializr.
- *                                      - add jpa auditing annotation.
- * 2023-08-16 - backendnovice@gmail.com - add description annotation.
+ * @author   : backendnovice@gmail.com
+ * @created  : 2023-07-25
+ * @modified : 2023-09-04
+ * @desc     : Main class for execute spring boot application.
  */
 
 package backendnovice.projectbookshop;
