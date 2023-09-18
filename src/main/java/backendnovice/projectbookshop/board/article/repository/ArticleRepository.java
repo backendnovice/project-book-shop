@@ -1,8 +1,8 @@
 /**
  * @author   : backendnovice@gmail.com
  * @created  : 2023-07-25
- * @modified : 2023-09-04
- * @desc     : An article-related repository interface. that manage and execute queries for Article table.
+ * @modified : 2023-09-18
+ * @desc     : 게시글 관련 쿼리를 관리하는 레포지토리 인터페이스.
  */
 
 package backendnovice.projectbookshop.board.article.repository;
@@ -17,55 +17,55 @@ import org.springframework.data.repository.query.Param;
 
 public interface ArticleRepository extends JpaRepository<Article, Long> {
     /**
-     * Find articles and comment counts without any options.
+     * 전체 게시글과 댓글 개수를 검색하고 페이지 타입 객체로 반환한다.
      * @param pageable
-     *      Pageable object for pagination data.
+     *      페이지네이션 객체
      * @return
-     *      Page object that include founding result.
+     *      검색 결과
      */
     @Query("SELECT a, COUNT(c) FROM Article a LEFT JOIN a.comments c GROUP BY a")
     Page<Object[]> findAllWithCommentCount(Pageable pageable);
 
     /**
-     * Find articles and comment counts with title.
+     * 제목을 포함하는 게시글과 댓글 개수를 검색하고 페이지 타입 객체로 반환한다.
      * @param title
-     *      Article title.
+     *      게시글 제목
      * @param pageable
-     *      Pageable object for pagination data.
+     *      페이지네이션 객체
      * @return
-     *      Page object that include founding result.
+     *      검색 결과
      */
     @Query("SELECT a, COUNT(c) FROM Article a LEFT JOIN a.comments c WHERE LOWER(a.title) LIKE %:title% GROUP BY a.id")
     Page<Object[]> findAllByTitleWithCommentCount(@Param("title") String title, Pageable pageable);
 
     /**
-     * Find articles and comment counts with title.
+     * 내용을 포함하는 게시글과 댓글 개수를 검색하고 페이지 타입 객체로 반환한다.
      * @param content
-     *      Article content.
+     *      게시글 내용
      * @param pageable
-     *      Pageable object for pagination data.
+     *      페이지네이션 객체
      * @return
-     *      Page object that include founding result.
+     *      검색 결과
      */
     @Query("SELECT a, COUNT(c) FROM Article a LEFT JOIN a.comments c WHERE LOWER(a.content) LIKE %:content% GROUP BY a.id")
     Page<Object[]> findAllByContentWithCommentCount(@Param("content") String content, Pageable pageable);
 
     /**
-     * Find articles and comment counts with title.
+     * 작성자명을 포함하는 게시글과 댓글 개수를 검색하고 페이지 타입 객체로 반환한다.
      * @param writer
-     *      Article writer.
+     *      게시글 작성자
      * @param pageable
-     *      Pageable object for pagination data.
+     *      페이지네이션 객체
      * @return
-     *      Page object that include founding result.
+     *      검색 결과
      */
     @Query("SELECT a, COUNT(c) FROM Article a LEFT JOIN a.comments c WHERE LOWER(a.writer) LIKE %:writer% GROUP BY a.id")
     Page<Object[]> findAllByWriterWithCommentCount(@Param("writer") String writer, Pageable pageable);
 
     /**
-     * Update articles views(view count) by id.
+     * ID와 일치하는 게시글의 조회수(views)를 증가시킨다.
      * @param id
-     *      Article id
+     *      게시글 ID
      */
     @Modifying
     @Query("UPDATE Article b SET b.views = b.views + 1 WHERE b.id = :id")

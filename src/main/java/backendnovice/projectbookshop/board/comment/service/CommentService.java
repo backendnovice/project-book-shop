@@ -1,8 +1,8 @@
 /**
  * @author   : backendnovice@gmail.com
  * @created  : 2023-08-20
- * @modified : 2023-09-04
- * @desc     : A comment-related service interface. that define business logic for comment.
+ * @modified : 2023-09-18
+ * @desc     : 댓글 관련 로직을 정의하는 서비스 인터페이스.
  */
 
 package backendnovice.projectbookshop.board.comment.service;
@@ -15,38 +15,38 @@ import java.util.NoSuchElementException;
 
 public interface CommentService {
     /**
-     * Select comments with article id.
+     * 게시글 ID와 일치하는 댓글들을 검색한다.
      * @param articleId
-     *      Article id.
+     *      게시글 ID
      * @param pageable
-     *      Pageable object.
+     *      페이지네이션 객체
      * @return
-     *      Page object that includes the found articles and pagination.
+     *      검색 결과
      */
     Page<CommentDTO> getComments(Long articleId, Pageable pageable);
 
     /**
-     * Create comment with DTO of parameter.
+     * 새로운 댓글을 등록한다.
      * @param commentDTO
-     *      CommentDTO object.
+     *      댓글 데이터 전달 객체
      */
     void write(CommentDTO commentDTO);
 
     /**
-     * Modify comment that matches id of dto.
+     * 댓글 ID와 일치하는 댓글을 수정한다.
      * @param commentDTO
-     *      Comment data transfer object including new content.
+     *      댓글 데이터 전달 객체
      * @exception NoSuchElementException
-     *      Throwable exception when no comment found to modify.
+     *      댓글이 존재하지 않을 때 발생하는 예외
      */
     void modify(CommentDTO commentDTO);
 
     /**
-     * Delete comment that matches id of parameter.
+     * 댓글 ID와 일치하는 댓글을 삭제한다.
      * @param commentId
-     *      Comment id.
+     *      댓글 ID
      * @exception NoSuchElementException
-     *      Throwable exception when no comment found to delete.
+     *      댓글이 존재하지 않을 때 발생하는 예외
      */
     void delete(Long commentId);
 }

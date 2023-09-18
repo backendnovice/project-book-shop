@@ -1,8 +1,8 @@
 /**
  * @author   : backendnovice@gmail.com
  * @created  : 2023-08-20
- * @modified : 2023-09-04
- * @desc     : A comment-related service implementation class. that actually implement business logic for comment.
+ * @modified : 2023-09-18
+ * @desc     : 댓글 관련 로직을 구현하는 서비스 클래스.
  */
 
 package backendnovice.projectbookshop.board.comment.service;
@@ -29,11 +29,9 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public Page<CommentDTO> getComments(Long articleId, Pageable pageable) {
         Page<Comment> result = commentRepository.findAllByArticleId(articleId, pageable);
-
-        if(result.isEmpty()) {
+        if (result.isEmpty()) {
             throw new NoSuchElementException();
         }
-
         return result.map(this::convertToDTO);
     }
 
@@ -55,17 +53,17 @@ public class CommentServiceImpl implements CommentService {
     public void delete(Long commentId) {
         try {
             commentRepository.deleteById(commentId);
-        }catch (EmptyResultDataAccessException e) {
+        } catch (EmptyResultDataAccessException e) {
             throw new NoSuchElementException();
         }
     }
 
     /**
-     * Convert Comment object to CommentDTO object.
+     * Comment 데이터 전달 객체를 Comment 객체로 변환한다.
      * @param comment
-     *      Comment object for convert.
+     *      변환할 객체
      * @return
-     *      Converted CommentDTO object.
+     *      변환된 객체
      */
     private CommentDTO convertToDTO(Comment comment) {
         return CommentDTO.builder()
@@ -76,11 +74,11 @@ public class CommentServiceImpl implements CommentService {
     }
 
     /**
-     * Convert CommentDTO object to Comment object.
+     * Comment 객체를 데이터 전달 객체로 변환한다.
      * @param commentDTO
-     *      CommentDTO object for convert.
+     *      변환할 객체
      * @return
-     *      Converted Comment object.
+     *      변환된 객체
      */
     private Comment convertToEntity(CommentDTO commentDTO) {
         return Comment.builder()

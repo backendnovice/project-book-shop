@@ -1,8 +1,8 @@
 /**
  * @author   : backendnovice@gmail.com
  * @created  : 2023-08-17
- * @modified : 2023-09-04
- * @desc     : A global-area exception handler class.
+ * @modified : 2023-09-18
+ * @desc     : 전 영역 사용자 정의 예외 핸들링 클래스.
  */
 
 package backendnovice.projectbookshop.global.exception;
@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class GlobalExceptionHandler {
     /**
-     * Get error page URI with message when call error page exception occurred.
+     * CallErrorPageException이 호출되면 에러 엔드포인트를 반환한다.
      * @param exception
-     *      Call error page exception.
+     *      CallErrorPageException
      * @return
-     *      Error page URI.
+     *      결과 URI
      */
     @ExceptionHandler(CallErrorPageException.class)
     public String handleCallErrorPageException(Model model, CallErrorPageException exception) {

@@ -1,33 +1,26 @@
 /**
  * @author   : backendnovice@gmail.com
  * @created  : 2023-07-25
- * @modified : 2023-09-04
- * @desc     : An article-related service implementation class. that actually implement business logic for article.
+ * @modified : 2023-09-18
+ * @desc     : 게시글 관련 로직을 구현하는 서비스 클래스.
  */
 
 package backendnovice.projectbookshop.board.article.service;
 
 import backendnovice.projectbookshop.board.article.domain.Article;
 import backendnovice.projectbookshop.board.article.dto.ArticleDTO;
-import backendnovice.projectbookshop.global.dto.PageDTO;
+import backendnovice.projectbookshop.global.dto.PaginationDTO;
 import backendnovice.projectbookshop.board.article.repository.ArticleRepository;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.NoSuchElementException;
 
 @Service
 public class ArticleServiceImpl implements ArticleService {
-    private final String COOKIE_NAME = "COOKIE_VIEWED";
-
     private final ArticleRepository articleRepository;
 
     public ArticleServiceImpl(ArticleRepository articleRepository) {
@@ -46,7 +39,7 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public Page<ArticleDTO> searchByTags(PageDTO pageDTO, Pageable pageable) {
+    public Page<ArticleDTO> searchByTags(PaginationDTO pageDTO, Pageable pageable) {
         String tag = pageDTO.getTag();
         String keyword = pageDTO.getKeyword();
         Page<ArticleDTO> result;
@@ -103,25 +96,18 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     @Transactional
-    public void updateView(Long articleId, HttpServletRequest request, HttpServletResponse response) {
-        Cookie[] cookies = request.getCookies();
-        boolean isCookieExists = checkCookieExists(cookies, articleId);
-
-        if(!isCookieExists) {
-            Cookie newCookie = createDoubleHitPreventionCookie(articleId);
-            response.addCookie(newCookie);
-            articleRepository.updateViewsById(articleId);
-        }
+    public void updateViews(Long id) {
+        articleRepository.updateViewsById(id);
     }
 
     /**
-     * Execute article selection query with title.
+     * 게시글 제목 검색 쿼리 메소드를 실행한다.
      * @param title
-     *      Article Title.
+     *      게시글 제목
      * @param pageable
-     *      Pageable object.
+     *      페이지네이션 객체
      * @return
-     *      Page object that include found articles.
+     *      검색 결과
      */
     private Page<ArticleDTO> searchWithTitle(String title, Pageable pageable) {
         Page<Object[]> result = articleRepository.findAllByTitleWithCommentCount(title, pageable);
@@ -134,13 +120,13 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     /**
-     * Execute article selection query with content.
+     * 게시글 내용 검색 쿼리 메소드를 실행한다.
      * @param content
-     *      Article content.
+     *      게시글 내용
      * @param pageable
-     *      Pageable object.
+     *      페이지네이션 객체
      * @return
-     *      Page object that include found articles.
+     *      검색 결과
      */
     private Page<ArticleDTO> searchWithContent(String content, Pageable pageable) {
         Page<Object[]> result = articleRepository.findAllByContentWithCommentCount(content, pageable);
@@ -153,13 +139,13 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     /**
-     * Execute article selection query with writer.
+     * 게시글 작성자 검색 쿼리 메소드를 실행한다.
      * @param writer
-     *      Article writer.
+     *      게시글 작성자
      * @param pageable
-     *      Pageable object.
+     *      페이지네이션 객체
      * @return
-     *      Page object that include found articles.
+     *      검색 결과
      */
     private Page<ArticleDTO> searchWithWriter(String writer, Pageable pageable) {
         Page<Object[]> result = articleRepository.findAllByWriterWithCommentCount(writer, pageable);
@@ -172,11 +158,11 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     /**
-     * Convert Article object to ArticleDTO object.
+     * Article 객체를 데이터 전달 객체로 변환한다.
      * @param article
-     *      Article object for convert.
+     *      변환할 객체
      * @return
-     *      Converted ArticleDTO object.
+     *      변환된 객체
      */
     private ArticleDTO convertToDTO(Article article) {
         return ArticleDTO.builder()
@@ -189,15 +175,15 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     /**
-     * Convert Object[] including Article and commentCount to ArticleDTO.
+     * 게시글과 조회수를 담고있는 Object[] 객체를 데이터 전달 객체로 변환한다.
      * @param object
-     *      Object[] for convert.
+     *      변환할 객체
      * @return
-     *      Converted ArticleDTO object.
+     *      변환된 객체
      */
     private ArticleDTO convertObjectToDTO(Object[] object) {
         Article article = (Article) object[0];
-        int commentCount = (int) object[1];
+        long commentCount = (long) object[1];
 
         return ArticleDTO.builder()
                 .id(article.getId())
@@ -211,11 +197,11 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     /**
-     * Convert ArticleDTO object to Article object.
+     * Article 데이터 전달 객체를 Article 객체로 변환한다.
      * @param articleDTO
-     *      ArticleDTO object for convert.
+     *      변환할 객체
      * @return
-     *      Converted Article object.
+     *      변환된 객체
      */
     private Article convertToEntity(ArticleDTO articleDTO) {
         return Article.builder()
@@ -223,56 +209,5 @@ public class ArticleServiceImpl implements ArticleService {
                 .content(articleDTO.getContent())
                 .writer(articleDTO.getWriter())
                 .build();
-    }
-
-    /**
-     * Check cookie exists with cookie name.
-     * @param cookies
-     *      Cookies array.
-     * @param articleId
-     *      Article id.
-     * @return
-     *      Checking result.
-     */
-    private boolean checkCookieExists(Cookie[] cookies, Long articleId) {
-        if(cookies == null) {
-            return false;
-        }
-
-        final String COOKIE_NAME_ID = COOKIE_NAME + articleId;
-        for(Cookie cookie : cookies) {
-            if(cookie.getName().equals(COOKIE_NAME_ID)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Create Double hit prevention Cookie expiring at tomorrow.
-     * @param articleId
-     *      Article id.
-     * @return
-     *      New cookie.
-     */
-    private Cookie createDoubleHitPreventionCookie(Long articleId) {
-        Cookie cookie = new Cookie(COOKIE_NAME + articleId, String.valueOf(articleId));
-        cookie.setMaxAge(getSecondsLeftTomorrow());
-        cookie.setHttpOnly(true);
-
-        return cookie;
-    }
-
-    /**
-     * Measure times left until tomorrow by seconds.
-     * @return
-     *      Seconds left until tomorrow.
-     */
-    private int getSecondsLeftTomorrow() {
-        LocalDateTime nowTime = LocalDateTime.now();
-        LocalDateTime tomorrowTime = LocalDateTime.now().plusDays(1L).truncatedTo(ChronoUnit.DAYS);
-
-        return (int) nowTime.until(tomorrowTime, ChronoUnit.SECONDS);
     }
 }

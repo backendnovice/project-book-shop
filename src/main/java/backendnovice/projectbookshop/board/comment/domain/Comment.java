@@ -1,8 +1,8 @@
 /**
  * @author   : backendnovice@gmail.com
  * @created  : 2023-08-20
- * @modified : 2023-09-04
- * @desc     : A comment-related entity class. that manage columns for Comment table.
+ * @modified : 2023-09-18
+ * @desc     : 댓글 테이블을 관리하는 엔티티 클래스.
  */
 
 package backendnovice.projectbookshop.board.comment.domain;

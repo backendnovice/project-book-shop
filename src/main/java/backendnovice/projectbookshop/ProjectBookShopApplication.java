@@ -1,8 +1,8 @@
 /**
  * @author   : backendnovice@gmail.com
  * @created  : 2023-07-25
- * @modified : 2023-09-04
- * @desc     : Main class for execute spring boot application.
+ * @modified : 2023-09-18
+ * @desc     : 스프링 부트 메인 애플리케이션 클래스.
  */
 
 package backendnovice.projectbookshop;

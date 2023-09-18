@@ -1,8 +1,8 @@
 /**
  * @author   : backendnovice@gmail.com
  * @created  : 2023-08-20
- * @modified : 2023-09-04
- * @desc     : An article-related controller class. that provide API when received requests from the view layer.
+ * @modified : 2023-09-18
+ * @desc     : 댓글 관련 POST, GET 요청을 핸들링하여 데이터를 제공하는 컨트롤러 클래스.
  */
 
 package backendnovice.projectbookshop.board.comment.controller;
@@ -10,6 +10,7 @@ package backendnovice.projectbookshop.board.comment.controller;
 import backendnovice.projectbookshop.board.comment.dto.CommentDTO;
 import backendnovice.projectbookshop.board.comment.service.CommentService;
 import backendnovice.projectbookshop.global.dto.ResponseDTO;
+import backendnovice.projectbookshop.global.exception.CallErrorPageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -29,88 +30,86 @@ public class CommentApiController {
     private String message;
 
     /**
-     * Call comment service method to process register new comment.
+     * 댓글 등록 서비스 메소드를 호출하고 결과 메시지를 반환한다.
      * @param commentDTO
-     *      Comment data transfer object.
+     *      댓글 데이터 전달 객체
      * @return
-     *      Response data transfer object, that includes result message.
+     *      결과 메시지
      */
     @PostMapping("/write")
     public ResponseDTO<?> write(CommentDTO commentDTO) {
-        if(commentDTO.getContent() == null || commentDTO.getWriter() == null) {
-            message = "cannot register comment with null data.";
-        }else {
+        if (commentDTO.getContent() == null || commentDTO.getWriter() == null) {
+            message = "올바르지 않은 요청입니다.";
+        } else {
             commentService.write(commentDTO);
-            message = "comment registration succeed.";
+            message = "댓글 등록이 완료되었습니다.";
         }
-
         return ResponseDTO.of(HttpStatus.OK.value(), message, null);
     }
 
     /**
-     * Call comment service method to process select comments by article id.
+     * 댓글 조회 서비스 메소드를 호출하고 결과 데이터 및 메시지를 반환한다.
      * @param articleId
-     *      Article id.
+     *      게시글 ID
      * @param pageable
-     *      Comment pageable object.
+     *      페이지네이션 객체
      * @return
-     *      Response data transfer object, that includes result message and data.
+     *      결과 댓글 및 메시지
      */
     @GetMapping("/read")
     public ResponseDTO<?> read(@RequestParam(value = "id", required = false) Long articleId, Pageable pageable) {
-        if(articleId == null) {
-            message = "cannot read comment with null data.";
-            return ResponseDTO.of(HttpStatus.OK.value(), message, null);
-        }else {
-            message = "comment selection succeed.";
+        if (articleId == null) {
+            throw new CallErrorPageException("올바르지 않은 요청입니다.");
+        }
+        try {
             Page<CommentDTO> comments = commentService.getComments(articleId, pageable);
+            message = "댓글 조회가 완료되었습니다.";
             return ResponseDTO.of(HttpStatus.OK.value(), message, comments);
+        }catch (NoSuchElementException e) {
+            message = "댓글이 존재하지 않습니다.";
+            return ResponseDTO.of(HttpStatus.OK.value(), message, null);
         }
     }
 
     /**
-     * Call comment service method to process modify comment.
+     * 댓글 수정 서비스 메소드를 호출하고 결과 메시지를 반환한다.
      * @param commentDTO
-     *      Comment data transfer object.
+     *      댓글 데이터 전달 객체
      * @return
-     *      Response data transfer object, that includes result message.
+     *      결과 메시지를 포함하는 Response 객체
      */
     @PostMapping("/modify")
     public ResponseDTO<?> modify(CommentDTO commentDTO) {
-        if(commentDTO.getContent() == null || commentDTO.getWriter() == null) {
-            message = "cannot modify comment with null data.";
-        }else {
-            try {
-                commentService.modify(commentDTO);
-                message = "comment modification succeeded.";
-            }catch(NoSuchElementException e) {
-                message = "this comment does not exists.";
-            }
+        if (commentDTO.getContent() == null || commentDTO.getWriter() == null) {
+            message = "비어있는 댓글을 등록할 수 없습니다.";
         }
-
+        try {
+            commentService.modify(commentDTO);
+            message = "댓글 수정이 완료되었습니다.";
+        } catch (NoSuchElementException e) {
+            message = "수정할 댓글이 존재하지 않습니다.";
+        }
         return ResponseDTO.of(HttpStatus.OK.value(), message, null);
     }
 
     /**
-     * Call comment service method to process delete comment by id.
+     * 댓글 삭제 서비스 메소드를 호출하고 결과 메시지를 반환한다.
      * @param commentId
-     *      Comment id.
+     *      댓글 ID
      * @exception NoSuchElementException
-     *      Throwable exception when no comment found to delete.
+     *      댓글이 존재하지 않을 때 발생하는 예외
      */
     @PostMapping("/delete")
     public ResponseDTO<?> delete(@RequestParam(value = "id", required = false) Long commentId) {
-        if(commentId == null) {
-            message = "cannot delete comment with null id.";
-        }else {
-            try {
-                commentService.delete(commentId);
-                message = "comment deletion succeeded.";
-            }catch (NoSuchElementException e) {
-                message = "this comment does not exists.";
-            }
+        if (commentId == null) {
+            message = "올바르지 않은 요청입니다.";
         }
-
+        try {
+            commentService.delete(commentId);
+            message = "댓글 삭제가 완료되었습니다.";
+        } catch (NoSuchElementException e) {
+            message = "삭제할 댓글이 존재하지 않습니다.";
+        }
         return ResponseDTO.of(HttpStatus.OK.value(), message, null);
     }
 }

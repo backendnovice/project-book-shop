@@ -1,8 +1,8 @@
 /**
  * @author   : backendnovice@gmail.com
  * @created  : 2023-07-25
- * @modified : 2023-09-04
- * @desc     : An article-related entity class. that manage columns for Article table.
+ * @modified : 2023-09-18
+ * @desc     : 게시글 테이블을 관리하는 엔티티 클래스.
  */
 
 package backendnovice.projectbookshop.board.article.domain;

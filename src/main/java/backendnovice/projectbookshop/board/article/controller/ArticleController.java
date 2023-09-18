@@ -1,17 +1,15 @@
 /**
  * @author   : backendnovice@gmail.com
  * @created  : 2023-07-25
- * @modified : 2023-09-04
- * @desc     : An article-related controller class. that maps URIs to handle requests from the view layer.
+ * @modified : 2023-09-18
+ * @desc     : 게시글 관련 POST, GET 요청을 핸들링하여 URI와 데이터를 제공하는 컨트롤러 클래스.
  */
 
 package backendnovice.projectbookshop.board.article.controller;
 
 import backendnovice.projectbookshop.board.article.dto.ArticleDTO;
-import backendnovice.projectbookshop.global.dto.PageDTO;
+import backendnovice.projectbookshop.global.dto.PaginationDTO;
 import backendnovice.projectbookshop.board.article.service.ArticleService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
@@ -22,7 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.NoSuchElementException;
 
 @Controller
-@RequestMapping("/board/article")
+@RequestMapping("/article")
 public class ArticleController {
     private final ArticleService articleService;
 
@@ -33,9 +31,9 @@ public class ArticleController {
     private String message;
 
     /**
-     * Get article write page URI.
+     * 게시글 등록 엔드포인트를 반환한다.
      * @return
-     *      Article write URI.
+     *      게시글 등록 URI
      */
     @GetMapping("/write")
     public String getWritePage() {
@@ -43,175 +41,163 @@ public class ArticleController {
     }
 
     /**
-     * Get article list page URI with pageable data.
+     * 검색 옵션, 페이지네이션 데이터를 받아 게시글 목록 엔드포인트를 반환한다.
      * @param model
-     *      Contains data to transfer view layer. include pagination and articles data.
+     *      게시글 DTO 또는 메시지를 포함하는 뷰 전달 객체
      * @param pageDTO
-     *      Contains data related to search options. (tag, keyword)
+     *      검색 옵션을 담는 DTO 객체 (키워드, 태그)
      * @param pageable
-     *      Pageable object. default page size is 10.
+     *      페이징 옵션을 담는 페이지네이션 객체
      * @return
-     *      Article list URI.
+     *      게시글 목록 URI
      */
     @GetMapping("/list")
-    public String getListPage(Model model, PageDTO pageDTO, Pageable pageable) {
-        String tag = pageDTO.getTag();
-        String keyword = pageDTO.getKeyword();
-        Page<ArticleDTO> result = null;
+    public String getListPage(Model model, PaginationDTO pageDTO, Pageable pageable) {
+        final String TAG = pageDTO.getTag();
+        final String KEYWORD = pageDTO.getKeyword();
+        Page<ArticleDTO> data = null;
+        PaginationDTO paginationDTO = new PaginationDTO();
 
         try {
-            if(tag == null || keyword == null) {
-                result = articleService.searchAll(pageable);
+            if(TAG == null || KEYWORD == null) {
+                data = articleService.searchAll(pageable);
             }else {
-                result = articleService.searchByTags(pageDTO, pageable);
+                data = articleService.searchByTags(pageDTO, pageable);
             }
-        }catch (NoSuchElementException e) {
-            message = "Cannot found any articles.";
-            result = articleService.searchAll(pageable);
-        }catch (IllegalArgumentException e) {
-            message = "Incorrect search tag detected.";
-            result = articleService.searchAll(pageable);
+            paginationDTO = new PaginationDTO(data);
+        } catch (NoSuchElementException e) {
+            message = "게시글을 찾을 수 없습니다.";
+            model.addAttribute("message", message);
+        } catch (IllegalArgumentException e) {
+            message = "올바르지 않은 요청입니다.";
+            model.addAttribute("message", message);
         }
 
-        PageDTO search = new PageDTO(result);
-        model.addAttribute("dto", result);
-        model.addAttribute("search", search);
-        model.addAttribute("message", message);
-
+        model.addAttribute("data", data);
+        model.addAttribute("pagination", paginationDTO);
         return "article/list";
     }
 
     /**
-     * Get article read page URI by id. update views if user hasn't visited in a day.
+     * ID에 해당하는 게시글 조회 엔드포인트를 반환한다.
      * @param model
-     *      Contains article data to transfer View layer. (Read page)
-     * @param articleId
-     *      Article id.
-     * @param request
-     *      Request cookies to check article visited today already.
-     * @param response
-     *      Response new cookie when request cookie not exists.
+     *      게시글 DTO 또는 메시지를 포함하는 뷰 전달 객체
+     * @param id
+     *      게시글 ID
      * @return
-     *      If there is an article matches with id, will return read URI. if not, will return list redirection URI.
+     *      결과 URI
      */
     @GetMapping("/read")
-    public String getReadPage(Model model, RedirectAttributes redirectAttributes, @RequestParam(value = "id", required = false) Long articleId
-            , HttpServletRequest request, HttpServletResponse response) {
-        if(articleId == null) {
-            message = "Cannot read article with blank id.";
+    public String getReadPage(Model model, RedirectAttributes redirectAttributes
+            , @RequestParam(value = "id", required = false) Long id) {
+        if (id == null) {
+            message = "올바르지 않은 요청입니다.";
             redirectAttributes.addFlashAttribute("message", message);
-
             return "redirect:/article/list";
-        }else {
-            try {
-                ArticleDTO result = articleService.read(articleId);
-                articleService.updateView(articleId, request, response);
-                result.setViews(result.getViews() + 1);
-                model.addAttribute("dto", result);
-
-                return "article/read";
-            }catch (NoSuchElementException e) {
-                message = "No article found with id.";
-                redirectAttributes.addFlashAttribute("message", message);
-
-                return "redirect:/article/list";
-            }
+        }
+        try {
+            ArticleDTO result = articleService.read(id);
+            articleService.updateViews(id);
+            result.setViews(result.getViews() + 1);
+            model.addAttribute("data", result);
+            return "article/read";
+        } catch (NoSuchElementException e) {
+            message = "조회할 게시글이 존재하지 않습니다.";
+            redirectAttributes.addFlashAttribute("message", message);
+            return "redirect:/article/list";
         }
     }
 
     /**
-     * Get article modify page URI by id.
+     * ID에 해당하는 게시글 수정 엔드포인트를 반환한다.<br>
      * @param model
-     *      Contains article data to transfer View layer. (Modify page)
-     * @param articleId
-     *      Article id.
+     *      게시글 DTO 또는 메시지를 포함하는 뷰 전달 객체
+     * @param id
+     *      게시글 ID
      * @return
-     *      If there is an article matches with id, will return modify URI. if not, will return list redirection URI.
+     *      결과 URI
      */
     @GetMapping("/modify")
-    public String getModifyPage(Model model, RedirectAttributes redirectAttributes, @RequestParam(value = "id", required = false) Long articleId) {
-        if(articleId == null) {
-            message = "Cannot modify article with blank id.";
+    public String getModifyPage(Model model, RedirectAttributes redirectAttributes, @RequestParam(value = "id", required = false) Long id) {
+        if (id == null) {
+            message = "올바르지 않은 요청입니다.";
             redirectAttributes.addFlashAttribute("message", message);
-
             return "redirect:/article/list";
-        }else {
-            try {
-                ArticleDTO result = articleService.read(articleId);
-                model.addAttribute("dto", result);
-
-                return "article/modify";
-            }catch (NoSuchElementException e) {
-                message = "No article found with id.";
-                redirectAttributes.addFlashAttribute("message", message);
-
-                return "redirect:/article/list";
-            }
+        }
+        try {
+            ArticleDTO result = articleService.read(id);
+            model.addAttribute("data", result);
+            return "article/modify";
+        } catch (NoSuchElementException e) {
+            message = "수정할 게시글이 존재하지 않습니다.";
+            redirectAttributes.addFlashAttribute("message", message);
+            return "redirect:/article/list";
         }
     }
 
     /**
-     * Call article service method to process register new article. and return article read redirection URI.
+     * 게시글 등록 서비스 메소드를 호출하고 엔드포인트와 메시지를 반환한다.<br>
      * @param articleDTO
-     *      Article transfer data object.
+     *      게시글 DTO
+     * @param redirectAttributes
+     *      결과 메시지
      * @return
-     *      If registration process succeeds, will return read URI. if process fails, will return write redirection URI.
+     *      결과 URI
      */
     @PostMapping("/write")
     public String callWriteProcessService(RedirectAttributes redirectAttributes, ArticleDTO articleDTO) {
-        if(articleDTO.getTitle() == null || articleDTO.getContent() == null || articleDTO.getWriter() == null) {
-            message = "cannot write an empty article.";
+        if (articleDTO.getTitle() == null || articleDTO.getContent() == null || articleDTO.getWriter() == null) {
+            message = "비어있는 게시글을 등록할 수 없습니다.";
             redirectAttributes.addFlashAttribute("message", message);
-
             return "redirect:/article/write";
-        }else {
+        } else {
             long result = articleService.write(articleDTO);
-            message = "article registration succeed.";
+            message = "게시글 등록이 완료되었습니다.";
             redirectAttributes.addFlashAttribute("message", message);
-
             return "redirect:/article/read?id=" + result;
         }
     }
 
     /**
-     * Call article service method to process modify article. and return article read redirection URI.
+     * 게시글 수정 서비스 메소드를 호출하고 엔드포인트와 메시지를 반환한다.
      * @param articleDTO
-     *      Article transfer data object.
+     *      게시글 DTO
+     * @param redirectAttributes 
+     *      결과 메시지
      * @return
-     *      If modification process succeeds, will return read URI. if process fails, will return list redirection URI.
+     *      결과 URI
      */
     @PostMapping("/modify")
     public String callModifyProcessService(RedirectAttributes redirectAttributes, ArticleDTO articleDTO) {
         try {
             long result = articleService.modify(articleDTO);
-            message = "article modification succeed.";
+            message = "게시글 수정이 완료되었습니다.";
             redirectAttributes.addFlashAttribute("message", message);
-
             return "redirect:/article/read?id=" + result;
-        }catch (NoSuchElementException e) {
-            message = "no article found with id.";
+        } catch (NoSuchElementException e) {
+            message = "수정할 게시글을 찾지 못했습니다.";
             redirectAttributes.addFlashAttribute("message", message);
-
             return "redirect:/article/list";
         }
     }
 
     /**
-     * Call article service to process delete article. and return article list redirection URI.
+     * 게시글 삭제 서비스 메소드를 호출하고 게시글 목록 엔드포인트와 메시지를 반환한다.
      * @param articleDTO
-     *      Article transfer data object.
+     *      게시글 DTO
+     * @param redirectAttributes 
+     *      결과 메시지
      * @return
-     *      Article list redirection URI.
+     *      결과 URI
      */
     @PostMapping("/delete")
     public String callDeleteProcessService(RedirectAttributes redirectAttributes, ArticleDTO articleDTO) {
         try {
             articleService.delete(articleDTO.getId());
-            message = "article deletion succeed.";
-        }catch(NoSuchElementException e) {
-            message = "cannot found any article to delete.";
+            message = "게시글 삭제가 완료되었습니다.";
+        } catch (NoSuchElementException e) {
+            message = "삭제할 게시글을 찾지 못했습니다.";
         }
-
         redirectAttributes.addFlashAttribute("message", message);
         return "redirect:/article/list";
     }
