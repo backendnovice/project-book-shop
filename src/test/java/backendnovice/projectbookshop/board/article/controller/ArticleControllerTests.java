@@ -1,14 +1,14 @@
 /**
  * @author   : backendnovice@gmail.com
  * @created  : 2023-08-01
- * @modified : 2023-09-04
- * @desc     : ArticleController test class.
+ * @modified : 2023-09-19
+ * @desc     : ArticleController 테스트 클래스.
  */
 
 package backendnovice.projectbookshop.board.article.controller;
 
 import backendnovice.projectbookshop.board.article.dto.ArticleDTO;
-import backendnovice.projectbookshop.global.dto.PageDTO;
+import backendnovice.projectbookshop.global.dto.PaginationDTO;
 import backendnovice.projectbookshop.board.article.service.ArticleService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -36,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(ArticleController.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@MockBean(JpaMetamodelMappingContext.class) // Solving an issue with jpa auditing.
+@MockBean(JpaMetamodelMappingContext.class) // JPA Auditing 이슈 해결
 public class ArticleControllerTests {
     @MockBean
     private ArticleService articleService;
@@ -44,12 +44,12 @@ public class ArticleControllerTests {
     @Autowired
     private MockMvc mockMvc;
 
-    private final String PREFIX = "/board/article/";
+    private final String PREFIX = "/article/";
 
     private Page<ArticleDTO> fakeArticles;
 
     /**
-     * Initialize before all tests. initialize "fakeArticles" with 10 fake article.
+     * 모든 테스트 전 10개의 가짜 게시글 DTO 리스트를 생성한다.
      */
     @BeforeAll
     void initialize() {
@@ -70,9 +70,9 @@ public class ArticleControllerTests {
     }
 
     /**
-     * Test for GET request on write page.
+     * 게시글 등록 URI에 대한 GET 요청이 성공하는지 테스트한다.
      * @throws Exception
-     *      Throwable exception when using mockMvc.preform().
+     *      mockMvc.preform()에서 발생할 수 있는 예외
      */
     @Test
     void should_ReturnWritePage_When_GetWritePageIsCalled() throws Exception {
@@ -88,15 +88,15 @@ public class ArticleControllerTests {
     }
 
     /**
-     * Test success case for GET request on list page without any options.
+     * 게시글 목록 URI에 대한 GET 요청이 성공하는지 테스트한다.
      * @throws Exception
-     *      Throwable exception when using mockMvc.preform().
+     *      mockMvc.preform()에서 발생할 수 있는 예외
      */
     @Test
     void should_ReturnListPage_When_GetListPageIsCalledWithoutParam() throws Exception {
         // given
         String uri = PREFIX + "list";
-        PageDTO fakePageDTO = new PageDTO(fakeArticles);
+        PaginationDTO fakePageDTO = new PaginationDTO(fakeArticles);
 
         // when
         when(articleService.searchAll(any(Pageable.class))).thenReturn(fakeArticles);
@@ -105,91 +105,91 @@ public class ArticleControllerTests {
         mockMvc.perform(get(uri))
                 .andExpect(status().isOk())
                 .andExpect(view().name("article/list"))
-                .andExpect(model().attributeExists("dto"))
-                .andExpect(model().attribute("dto", fakeArticles))
-                .andExpect(model().attributeExists("search"))
-                .andExpect(model().attribute("search", fakePageDTO));
+                .andExpect(model().attributeExists("data"))
+                .andExpect(model().attribute("data", fakeArticles))
+                .andExpect(model().attributeExists("pagination"))
+                .andExpect(model().attribute("pagination", fakePageDTO));
     }
 
     /**
-     * Test success case for GET request on list page with both good tag and keyword.
+     * 올바른 태그와 키워드를 파라미터로 게시글 목록 URI에 대한 GET 요청이 성공하는지 테스트한다.
      * @throws Exception
-     *      Throwable exception when using mockMvc.preform().
+     *      mockMvc.preform()에서 발생할 수 있는 예외
      */
     @Test
     void should_ReturnListPage_When_GetListPageIsCalledWithGoodTagAndGoodKeyword() throws Exception {
         // given
         String uri = PREFIX + "list";
-        PageDTO fakePageDTO = new PageDTO(fakeArticles);
+        PaginationDTO fakePageDTO = new PaginationDTO(fakeArticles);
 
         // when
-        when(articleService.searchByTags(any(PageDTO.class), any(Pageable.class))).thenReturn(fakeArticles);
+        when(articleService.searchByTags(any(PaginationDTO.class), any(Pageable.class))).thenReturn(fakeArticles);
 
         // then
         mockMvc.perform(get(uri).param("tag", "title").param("keyword", "title"))
                 .andExpect(view().name("article/list"))
-                .andExpect(model().attributeExists("dto"))
-                .andExpect(model().attribute("dto", fakeArticles))
-                .andExpect(model().attributeExists("search"))
-                .andExpect(model().attribute("search", fakePageDTO));
+                .andExpect(model().attributeExists("data"))
+                .andExpect(model().attribute("data", fakeArticles))
+                .andExpect(model().attributeExists("pagination"))
+                .andExpect(model().attribute("pagination", fakePageDTO));
     }
 
     /**
-     * Test failure case for GET request on list page with bad tag.
+     * 잘못된 태그를 파라미터로 게시글 목록 URI에 대한 GET 요청이 실패하는지 테스트한다.
      * @throws Exception
-     *      Throwable exception when using mockMvc.preform().
+     *      mockMvc.preform()에서 발생할 수 있는 예외
      */
     @Test
     void should_ReturnListPage_When_GetListPageIsCalledWithBadTag() throws Exception {
         // given
         String uri = PREFIX + "list";
-        PageDTO fakePageDTO = new PageDTO(fakeArticles);
+        PaginationDTO fakePageDTO = new PaginationDTO(fakeArticles);
 
         // when
-        when(articleService.searchByTags(any(PageDTO.class), any(Pageable.class))).thenThrow(IllegalArgumentException.class);
+        when(articleService.searchByTags(any(PaginationDTO.class), any(Pageable.class))).thenThrow(IllegalArgumentException.class);
         when(articleService.searchAll(any(Pageable.class))).thenReturn(fakeArticles);
 
         // then
         mockMvc.perform(get(uri).param("tag", "blank").param("keyword", "nothing"))
                 .andExpect(view().name("article/list"))
-                .andExpect(model().attributeExists("dto"))
-                .andExpect(model().attribute("dto", fakeArticles))
-                .andExpect(model().attributeExists("search"))
-                .andExpect(model().attribute("search", fakePageDTO))
+                .andExpect(model().attributeExists("data"))
+                .andExpect(model().attribute("data", fakeArticles))
+                .andExpect(model().attributeExists("pagination"))
+                .andExpect(model().attribute("pagination", fakePageDTO))
                 .andExpect(model().attributeExists("message"))
-                .andExpect(model().attribute("message", "Incorrect search tag detected."));
+                .andExpect(model().attribute("message", "올바르지 않은 요청입니다."));
     }
 
     /**
-     * Test failure case for GET request on list page with bad keyword.
+     * 잘못된 키워드를 파라미터로 게시글 목록 URI에 대한 GET 요청이 실패하는지 테스트한다.
      * @throws Exception
-     *      Throwable exception when using mockMvc.preform().
+     *      mockMvc.preform()에서 발생할 수 있는 예외
      */
     @Test
     void should_ReturnListPage_When_GetListPageIsCalledWithBadKeyword() throws Exception {
         // given
         String uri = PREFIX + "list";
-        PageDTO fakePageDTO = new PageDTO(fakeArticles);
+        PaginationDTO fakePageDTO = new PaginationDTO(fakeArticles);
 
         // when
-        when(articleService.searchByTags(any(PageDTO.class), any(Pageable.class))).thenThrow(NoSuchElementException.class);
+        when(articleService.searchByTags(any(PaginationDTO.class), any(Pageable.class))).thenThrow(NoSuchElementException.class);
         when(articleService.searchAll(any(Pageable.class))).thenReturn(fakeArticles);
 
         // then
         mockMvc.perform(get(uri).param("tag", "title").param("keyword", "nothing"))
                 .andExpect(view().name("article/list"))
-                .andExpect(model().attributeExists("dto"))
-                .andExpect(model().attribute("dto", fakeArticles))
-                .andExpect(model().attributeExists("search"))
-                .andExpect(model().attribute("search", fakePageDTO))
+                .andExpect(model().attributeExists("data"))
+                .andExpect(model().attribute("data", fakeArticles))
+                .andExpect(model().attributeExists("pagination"))
+                .andExpect(model().attribute("pagination", fakePageDTO))
                 .andExpect(model().attributeExists("message"))
-                .andExpect(model().attribute("message", "Cannot found any articles."));
+                .andExpect(model().attribute("message", "게시글을 찾을 수 없습니다."));
     }
 
     /**
-     * Test success case for GET request on read page with good article id.
+     * 올바른 ID를 파라미터로 게시글 조회 URI에 대한 GET 요청이 성공하는지 테스트한다.
      * @throws Exception
-     *      Throwable exception when using mockMvc.preform().
+     *      mockMvc.preform()에서 발생할 수 있는 예외
      */
     @Test
     void should_ReturnReadPage_When_GetReadPageIsCalledWithGoodArticleId() throws Exception {
@@ -204,14 +204,14 @@ public class ArticleControllerTests {
         mockMvc.perform(get(uri).param("id", "1"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("article/read"))
-                .andExpect(model().attributeExists("dto"))
-                .andExpect(model().attribute("dto", mockDTO));
+                .andExpect(model().attributeExists("data"))
+                .andExpect(model().attribute("data", mockDTO));
     }
 
     /**
-     * Test failure case for GET request on read page with null article id.
+     * 비어있는 ID를 파라미터로 게시글 조회 URI에 대한 GET 요청이 실패하는지 테스트한다.
      * @throws Exception
-     *      Throwable exception when using mockMvc.preform().
+     *      mockMvc.preform()에서 발생할 수 있는 예외
      */
     @Test
     void should_ReturnListPage_When_GetReadPageIsCalledWithNullArticleId() throws Exception {
@@ -225,13 +225,13 @@ public class ArticleControllerTests {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/article/list"))
                 .andExpect(flash().attributeExists("message"))
-                .andExpect(flash().attribute("message", "Cannot read article with blank id."));
+                .andExpect(flash().attribute("message", "올바르지 않은 요청입니다."));
     }
 
     /**
-     * Test failure case for GET request on read page with bad article id.
+     * 잘못된 ID를 파라미터로 게시글 조회 URI에 대한 GET 요청에서 예외가 발생하는지 테스트한다.
      * @throws Exception
-     *      Throwable exception when using mockMvc.preform().
+     *      mockMvc.preform()에서 발생할 수 있는 예외
      */
     @Test
     void should_ReturnListPage_When_GetReadPageIsCalledWithBadArticleId() throws Exception {
@@ -246,13 +246,13 @@ public class ArticleControllerTests {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/article/list"))
                 .andExpect(flash().attributeExists("message"))
-                .andExpect(flash().attribute("message", "No article found with id."));
+                .andExpect(flash().attribute("message", "조회할 게시글이 존재하지 않습니다."));
     }
 
     /**
-     * Test success case for GET request on modify page with good article id.
+     * 올바른 ID를 파라미터로 게시글 수정 URI에 대한 GET 요청이 성공하는지 테스트한다.
      * @throws Exception
-     *      Throwable exception when using mockMvc.preform().
+     *      mockMvc.preform()에서 발생할 수 있는 예외
      */
     @Test
     void should_ReturnModifyPage_When_GetModifyPageIsCalledWithGoodArticleId() throws Exception {
@@ -267,14 +267,14 @@ public class ArticleControllerTests {
         mockMvc.perform(get(uri).param("id", "1"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("article/modify"))
-                .andExpect(model().attributeExists("dto"))
-                .andExpect(model().attribute("dto", mockDTO));
+                .andExpect(model().attributeExists("data"))
+                .andExpect(model().attribute("data", mockDTO));
     }
 
     /**
-     * Test failure case for GET request on modify page with null article id.
+     * 비어있는 ID를 파라미터로 게시글 수정 URI에 대한 GET 요청이 실패하는지 테스트한다.
      * @throws Exception
-     *      Throwable exception when using mockMvc.preform().
+     *      mockMvc.preform()에서 발생할 수 있는 예외
      */
     @Test
     void should_ReturnListPage_When_GetModifyPageIsCalledWithNullArticleId() throws Exception {
@@ -288,13 +288,13 @@ public class ArticleControllerTests {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/article/list"))
                 .andExpect(flash().attributeExists("message"))
-                .andExpect(flash().attribute("message", "Cannot modify article with blank id."));
+                .andExpect(flash().attribute("message", "올바르지 않은 요청입니다."));
     }
 
     /**
-     * Test failure case for GET request on modify page with bad article id.
+     * 잘못된 ID를 파라미터로 게시글 수정 URI에 대한 GET 요청에서 예외가 발생하는지 테스트한다.
      * @throws Exception
-     *      Throwable exception when using mockMvc.preform().
+     *      mockMvc.preform()에서 발생할 수 있는 예외
      */
     @Test
     void should_ReturnListPage_When_GetModifyPageIsCalledWithBadArticleId() throws Exception {
@@ -310,13 +310,13 @@ public class ArticleControllerTests {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/article/list"))
                 .andExpect(flash().attributeExists("message"))
-                .andExpect(flash().attribute("message", "No article found with id."));
+                .andExpect(flash().attribute("message", "수정할 게시글이 존재하지 않습니다."));
     }
 
     /**
-     * Test success case for POST request on write article process.
+     * 게시글 등록 URI에 대한 POST 요청이 성공하는지 테스트한다.
      * @throws Exception
-     *      Throwable exception when using mockMvc.preform().
+     *      mockMvc.preform()에서 발생할 수 있는 예외
      */
     @Test
     void should_ReturnReadPage_When_CallWriteProcessServiceIsCalledAndSucceed() throws Exception {
@@ -335,13 +335,13 @@ public class ArticleControllerTests {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/article/read?id=" + 1L))
                 .andExpect(flash().attributeExists("message"))
-                .andExpect(flash().attribute("message", "article registration succeed."));
+                .andExpect(flash().attribute("message", "게시글 등록이 완료되었습니다."));
     }
 
     /**
-     * Test failure case for POST request on write article process.
+     * 비어있는 데이터를 파라미터로 게시글 등록 URI에 대한 POST 요청이 성공하는지 테스트한다.
      * @throws Exception
-     *      Throwable exception when using mockMvc.preform().
+     *      mockMvc.preform()에서 발생할 수 있는 예외
      */
     @Test
     void should_ReturnWritePage_When_CallWriteProcessServiceIsCalledAndFailed() throws Exception {
@@ -353,13 +353,13 @@ public class ArticleControllerTests {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/article/write"))
                 .andExpect(flash().attributeExists("message"))
-                .andExpect(flash().attribute("message", "cannot write an empty article."));
+                .andExpect(flash().attribute("message", "비어있는 게시글을 등록할 수 없습니다."));
     }
 
     /**
-     * Test success case for POST request on modify article process.
+     * 올바른 데이터를 파라미터로 게시글 수정 URI에 대한 POST 요청이 성공하는지 테스트한다.
      * @throws Exception
-     *      Throwable exception when using mockMvc.preform().
+     *      mockMvc.preform()에서 발생할 수 있는 예외
      */
     @Test
     void should_ReturnReadPage_When_CallModifyProcessServiceIsCalledAndSucceed() throws Exception {
@@ -378,13 +378,13 @@ public class ArticleControllerTests {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/article/read?id=" + 1L))
                 .andExpect(flash().attributeExists("message"))
-                .andExpect(flash().attribute("message", "article modification succeed."));
+                .andExpect(flash().attribute("message", "게시글 수정이 완료되었습니다."));
     }
 
     /**
-     * Test failure case for POST request on modify article process.
+     * 잘못된 ID를 파라미터로 게시글 수정 URI에 대한 POST 요청이 실패하는지 테스트한다.
      * @throws Exception
-     *      Throwable exception when using mockMvc.preform().
+     *      mockMvc.preform()에서 발생할 수 있는 예외
      */
     @Test
     void should_ReturnListPage_When_CallModifyProcessServiceIsCalledAndFailed() throws Exception {
@@ -403,13 +403,13 @@ public class ArticleControllerTests {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/article/list"))
                 .andExpect(flash().attributeExists("message"))
-                .andExpect(flash().attribute("message", "no article found with id."));
+                .andExpect(flash().attribute("message", "수정할 게시글을 찾지 못했습니다."));
     }
 
     /**
-     * Test success case for POST request on delete article process.
+     * 올바른 ID를 파라미터로 게시글 삭제 URI에 대한 POST 요청이 성공하는지 테스트한다.
      * @throws Exception
-     *      Throwable exception when using mockMvc.preform().
+     *      mockMvc.preform()에서 발생할 수 있는 예외
      */
     @Test
     void should_ReturnListPage_When_CallDeleteProcessServiceIsCalledAndSucceed() throws Exception {
@@ -424,13 +424,13 @@ public class ArticleControllerTests {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/article/list"))
                 .andExpect(flash().attributeExists("message"))
-                .andExpect(flash().attribute("message", "article deletion succeed."));
+                .andExpect(flash().attribute("message", "게시글 삭제가 완료되었습니다."));
     }
 
     /**
-     * Test failure case for POST request on delete article process.
+     * 잘못된 ID를 파라미터로 게시글 삭제 URI에 대한 POST 요청이 실패하는지 테스트한다.
      * @throws Exception
-     *      Throwable exception when using mockMvc.preform().
+     *      mockMvc.preform()에서 발생할 수 있는 예외
      */
     @Test
     void should_ReturnListPage_When_CallDeleteProcessServiceIsCalledAndFailed() throws Exception {
@@ -445,6 +445,6 @@ public class ArticleControllerTests {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/article/list"))
                 .andExpect(flash().attributeExists("message"))
-                .andExpect(flash().attribute("message", "cannot found any article to delete."));
+                .andExpect(flash().attribute("message", "삭제할 게시글을 찾지 못했습니다."));
     }
 }

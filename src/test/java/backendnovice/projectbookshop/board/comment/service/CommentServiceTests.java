@@ -1,8 +1,8 @@
 /**
  * @author   : backendnovice@gmail.com
  * @created  : 2023-08-30
- * @modified : 2023-09-04
- * @desc     : CommentService test class.
+ * @modified : 2023-09-19
+ * @desc     : CommentService 테스트 클래스.
  */
 
 package backendnovice.projectbookshop.board.comment.service;
@@ -43,7 +43,7 @@ public class CommentServiceTests {
     private Page<Comment> emptyComments;
 
     /**
-     * Initialize before each test. initialize "fakeComments" and "emptyComments".
+     * 각 테스트 전에 fakeComments와 emptyComments를 초기화한다.
      */
     @BeforeEach
     void initialize() {
@@ -54,7 +54,7 @@ public class CommentServiceTests {
     }
 
     /**
-     * Test success case for getComments() method.
+     * getComments() 메소드에 대한 성공 케이스를 테스트한다.
      */
     @Test
     void should_ReturnCommentDTOTypePageObject_When_GetCommentsIsCalledAndSucceed() {
@@ -71,7 +71,7 @@ public class CommentServiceTests {
     }
 
     /**
-     * Test failure case for getComments() method.
+     * getComments() 메소드에 대한 실패 케이스를 테스트한다.
      */
     @Test
     void should_ThrowNoSuchElementException_When_GetCommentsIsCalledAndFailed() {
@@ -89,7 +89,7 @@ public class CommentServiceTests {
     }
 
     /**
-     * Test success case for write() method.
+     * write() 메소드에 대한 성공 케이스를 테스트한다.
      */
     @Test
     void should_CalledSaveOneTimes_When_WriteIsCalledAndSucceed() {
@@ -106,7 +106,7 @@ public class CommentServiceTests {
     }
 
     /**
-     * Test success case for modify() method.
+     * modify() 메소드에 대한 성공 케이스를 테스트한다.
      */
     @Test
     void should_CalledSaveOneTimes_When_ModifyIsCalledAndSucceed() {
@@ -125,7 +125,7 @@ public class CommentServiceTests {
     }
 
     /**
-     * Test failure case for modify() method.
+     * modify() 메소드에 대한 실패 케이스를 테스트한다.
      */
     @Test
     void should_ThrowNoSuchElementException_When_ModifyIsCalledAndFailed() {
@@ -142,7 +142,7 @@ public class CommentServiceTests {
     }
 
     /**
-     * Test success case for delete() method.
+     * delete() 메소드에 대한 성공 케이스를 테스트한다.
      */
     @Test
     void should_CalledDeleteByIdOneTimes_When_DeleteIsCalledAndSucceed() {
@@ -158,7 +158,7 @@ public class CommentServiceTests {
     }
 
     /**
-     * Test failure case for delete() method.
+     * delete() 메소드에 대한 실패 케이스를 테스트한다.
      */
     @Test
     void should_ThrowNoSuchElementException_When_DeleteIsCalledAndFailed() {

@@ -1,8 +1,8 @@
 /**
  * @author   : backendnovice@gmail.com
  * @created  : 2023-07-25
- * @modified : 2023-09-04
- * @desc     : ArticleRepository test class.
+ * @modified : 2023-09-19
+ * @desc     : ArticleRepository 테스트 클래스.
  */
 
 package backendnovice.projectbookshop.board.article.repository;
@@ -19,14 +19,14 @@ import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.*;
 
-@DataJpaTest // Load jpa related settings, include in memory db, transactional.
+@DataJpaTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ArticleRepositoryTests {
     @Autowired
     private ArticleRepository articleRepository;
 
     /**
-     * Initialize before all tests. initialize with 1 ~ 50 fake article.
+     * 모든 테스트 전 50개의 가짜 게시글을 생성한다.
      */
     @BeforeAll
     void initialize() {
@@ -41,6 +41,9 @@ public class ArticleRepositoryTests {
         });
     }
 
+    /**
+     * 전체 게시글 조회 쿼리 메소드를 테스트한다.
+     */
     @Test
     void should_ReturnPageTypeObjectIncludingArticleAndCommentCount_When_FindAllWithCommentCountIsCalledAndSucceed() {
         // given
@@ -57,7 +60,7 @@ public class ArticleRepositoryTests {
     }
 
     /**
-     * Test article select query method with title on succeed.
+     * 제목을 포함하는 게시글 조회 쿼리 메소드를 실행하고 성공하는 케이스를 테스트한다.
      */
     @Test
     void should_ReturnPageTypeObjectIncludingArticleAndCommentCount_When_FindAllByTitleWithCommentCountIsCalledAndSucceed() {
@@ -75,7 +78,7 @@ public class ArticleRepositoryTests {
     }
 
     /**
-     * Test article select query method with title on failure.
+     * 제목을 포함하는 게시글 조회 쿼리 메소드를 실행하고 실패하는 케이스를 테스트한다.
      */
     @Test
     void should_ReturnEmptyObject_When_FindAllByTitleWithCommentCountIsCalledAndFailed() {
@@ -91,7 +94,7 @@ public class ArticleRepositoryTests {
     }
 
     /**
-     * Test article select query method with content on succeed.
+     * 내용을 포함하는 게시글 조회 쿼리 메소드를 실행하고 성공하는 케이스를 테스트한다.
      */
     @Test
     void should_ReturnPageTypeObjectIncludingArticleAndCommentCount_When_FindAllByContentWithCommentCountIsCalledAndSucceed() {
@@ -109,7 +112,7 @@ public class ArticleRepositoryTests {
     }
 
     /**
-     * Test article select query method with content on failure.
+     * 내용을 포함하는 게시글 조회 쿼리 메소드를 실행하고 실패하는 케이스를 테스트한다.
      */
     @Test
     void should_ReturnEmptyObject_When_FindAllByContentWithCommentCountIsCalledAndFailed() {
@@ -125,7 +128,7 @@ public class ArticleRepositoryTests {
     }
 
     /**
-     * Test article select query method with writer on succeed.
+     * 작성자를 포함하는 게시글 조회 쿼리 메소드를 실행하고 성공하는 케이스를 테스트한다.
      */
     @Test
     void should_ReturnPageTypeObjectIncludingArticleAndCommentCount_When_FindAllByWriterWithCommentCountIsCalledAndSucceed() {
@@ -143,7 +146,7 @@ public class ArticleRepositoryTests {
     }
 
     /**
-     * Test article select query method with writer on failure.
+     * 작성자를 포함하는 게시글 조회 쿼리 메소드를 실행하고 실패하는 케이스를 테스트한다.
      */
     @Test
     void should_ReturnEmptyObject_When_FindAllByWriterWithCommentCountIsCalledAndFailed() {
@@ -159,10 +162,9 @@ public class ArticleRepositoryTests {
     }
 
     /**
-     * Test update view count query method with id.
+     * 게시글 조회수 업데이트 쿼리 메소드를 테스트한다.
      */
     @Test
-    @DisplayName("Update View count Test with ID")
     void Should_IncreaseArticleViews_When_UpdateViewsByIdIsCalled() {
         // given
         Long id = 1L;

@@ -1,15 +1,15 @@
 /**
  * @author   : backendnovice@gmail.com
  * @created  : 2023-07-25
- * @modified : 2023-09-04
- * @desc     : ArticleService test class.
+ * @modified : 2023-09-19
+ * @desc     : ArticleService 테스트 클래스.
  */
 
 package backendnovice.projectbookshop.board.article.service;
 
 import backendnovice.projectbookshop.board.article.domain.Article;
 import backendnovice.projectbookshop.board.article.dto.ArticleDTO;
-import backendnovice.projectbookshop.global.dto.PageDTO;
+import backendnovice.projectbookshop.global.dto.PaginationDTO;
 import backendnovice.projectbookshop.board.article.repository.ArticleRepository;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,8 +21,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,22 +44,22 @@ public class ArticleServiceTests {
     private Page<Object[]> emptyResult;
 
     /**
-     * Initialize before each test. initialize "fakeArticles".
+     * 각 테스트 전에 fakeResult와 emptyResult를 초기화한다.
      */
     @BeforeEach
     void initialize() {
-        // Initialize fake result.
+        // 가짜 결과 인스턴스를 초기화한다.
         List<Object[]> fakeArticles = new ArrayList<>();
         Object[] fakeData = new Object[]{new Article(), 1};
         fakeArticles.add(fakeData);
         fakeResult = new PageImpl<>(fakeArticles);
 
-        // Initialize empty result.
+        // 빈 결과 인스턴스를 초기화한다.
         emptyResult = Page.empty();
     }
 
     /**
-     * Test success case for searchAll() method.
+     * searchAll() 메소드에 대한 성공 케이스를 테스트한다.
      */
     @Test
     void should_ReturnArticleDTOTypePageObject_When_SearchAllIsCalledAndSucceed() {
@@ -77,7 +75,7 @@ public class ArticleServiceTests {
     }
 
     /**
-     * Test failure case for searchAll() method.
+     * searchAll() 메소드에 대한 실패 케이스를 테스트한다.
      */
     @Test
     void should_ThrowNoSuchElementException_When_SearchAllIsCalledAndFailed() {
@@ -94,13 +92,13 @@ public class ArticleServiceTests {
     }
 
     /**
-     * Test success case for searchByTags() method with title tag.
+     * title 태그를 파라미터로 searchByTags() 메소드에 대한 성공 케이스를 테스트한다.
      */
     @Test
     void should_ReturnArticleDTOTypePageObject_When_SearchByTagsIsCalledWithTitleTagAndSucceed() {
         // given
         Pageable pageable = PageRequest.of(0, 10);
-        PageDTO pageDTO = PageDTO.builder().tag("title").keyword("keyword").build();
+        PaginationDTO pageDTO = PaginationDTO.builder().tag("title").keyword("keyword").build();
 
         // when
         when(articleRepository.findAllByTitleWithCommentCount(anyString(), any(Pageable.class))).thenReturn(fakeResult);
@@ -111,13 +109,13 @@ public class ArticleServiceTests {
     }
 
     /**
-     * Test success case for searchByTags() method with content tag.
+     * content 태그를 파라미터로 searchByTags() 메소드에 대한 성공 케이스를 테스트한다.
      */
     @Test
     void should_ReturnArticleDTOTypePageObject_When_SearchByTagsIsCalledWithContentTagAndSucceed() {
         // given
         Pageable pageable = PageRequest.of(0, 10);
-        PageDTO pageDTO = PageDTO.builder().tag("content").keyword("keyword").build();
+        PaginationDTO pageDTO = PaginationDTO.builder().tag("content").keyword("keyword").build();
 
         // when
         when(articleRepository.findAllByContentWithCommentCount(anyString(), any(Pageable.class))).thenReturn(fakeResult);
@@ -128,13 +126,13 @@ public class ArticleServiceTests {
     }
 
     /**
-     * Test success case for searchByTags() method with writer tag.
+     * writer 태그를 파라미터로 searchByTags() 메소드에 대한 성공 케이스를 테스트한다.
      */
     @Test
     void should_ReturnArticleDTOTypePageObject_When_SearchByTagsIsCalledWithWriterTagAndSucceed() {
         // given
         Pageable pageable = PageRequest.of(0, 10);
-        PageDTO pageDTO = PageDTO.builder().tag("writer").keyword("keyword").build();
+        PaginationDTO pageDTO = PaginationDTO.builder().tag("writer").keyword("keyword").build();
 
         // when
         when(articleRepository.findAllByWriterWithCommentCount(anyString(), any(Pageable.class))).thenReturn(fakeResult);
@@ -145,13 +143,13 @@ public class ArticleServiceTests {
     }
 
     /**
-     * Test failure case for searchByTags() method with wrong tag.
+     * 잘못된 태그를 파라미터로 searchByTags() 메소드에 대한 실패 케이스를 테스트한다.
      */
     @Test
     void should_ThrowIllegalArgumentException_When_SearchByTagsIsCalledWithWrongTagAndFailed() {
         // given
         Pageable pageable = PageRequest.of(0, 10);
-        PageDTO pageDTO = PageDTO.builder().tag("wrong").keyword("keyword").build();
+        PaginationDTO pageDTO = PaginationDTO.builder().tag("wrong").keyword("keyword").build();
 
         // when
 
@@ -162,13 +160,13 @@ public class ArticleServiceTests {
     }
 
     /**
-     * Test failure case for searchByTags() method expecting empty result.
+     * 비어있는 결과를 반환하는 searchByTags() 메소드에 대한 실패 케이스를 테스트한다.
      */
     @Test
     void should_ThrowNoSuchElementException_When_SearchByTagsIsCalledExpectEmpty() {
         // given
         Pageable pageable = PageRequest.of(0, 10);
-        PageDTO pageDTO = PageDTO.builder().tag("title").keyword("keyword").build();
+        PaginationDTO pageDTO = PaginationDTO.builder().tag("title").keyword("keyword").build();
 
         // when
         when(articleRepository.findAllByTitleWithCommentCount(anyString(), any(Pageable.class))).thenReturn(emptyResult);
@@ -180,7 +178,7 @@ public class ArticleServiceTests {
     }
 
     /**
-     * Test success case for write() method.
+     * write() 메소드에 대한 성공 케이스를 테스트한다.
      */
     @Test
     void should_ReturnArticleId_When_WriteIsCalledWithArticleDTOAndSucceed() {
@@ -197,7 +195,7 @@ public class ArticleServiceTests {
     }
 
     /**
-     * Test success case for read() method.
+     * read() 메소드에 대한 성공 케이스를 테스트한다.
      */
     @Test
     void should_ReturnArticleDTO_When_ReadIsCalledWithArticleIdAndSucceed() {
@@ -213,7 +211,7 @@ public class ArticleServiceTests {
     }
 
     /**
-     * Test failure case for read() method.
+     * read() 메소드에 대한 실패 케이스를 테스트한다.
      */
     @Test
     void should_ThrowNoSuchElementException_When_ReadIsCalledWithArticleIdAndFailed() {
@@ -230,7 +228,7 @@ public class ArticleServiceTests {
     }
 
     /**
-     * Test success case for modify() method.
+     * modify() 메소드에 대한 성공 케이스를 테스트한다.
      */
     @Test
     void should_ReturnArticleId_When_ModifyIsCalledWithArticleDTOAndSucceed() {
@@ -248,7 +246,7 @@ public class ArticleServiceTests {
     }
 
     /**
-     * Test failure case for modify() method.
+     * modify() 메소드에 대한 실패 케이스를 테스트한다.
      */
     @Test
     void should_ThrowNoSuchElementException_When_ModifyIsCalledWithArticleDTOAndFailed() {
@@ -265,7 +263,7 @@ public class ArticleServiceTests {
     }
 
     /**
-     * Test success case for delete() method.
+     * delete() 메소드에 대한 성공 케이스를 테스트한다.
      */
     @Test
     void should_ReturnArticleId_When_DeleteIsCalledWithArticleIdAndSucceed() {
@@ -281,7 +279,7 @@ public class ArticleServiceTests {
     }
 
     /**
-     * Test failure case for delete() method.
+     * delete() 메소드에 대한 실패 케이스를 테스트한다.
      */
     @Test
     void should_ThrowNoSuchElementException_When_DeleteIsCalledWithArticleIdAndFailed() {
@@ -298,19 +296,16 @@ public class ArticleServiceTests {
     }
 
     /**
-     * Test success case for updateView() method.
+     * updateViews() 메소드에 대한 성공 케이스를 테스트한다.
      */
     @Test
-    void should_CalledUpdateViewByIdOneTimes_When_UpdateViewIsCalledAndSucceed() {
+    void should_CalledUpdateViewByIdOneTimes_When_UpdateViewsIsCalledAndSucceed() {
         // given
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        Article article = mock(Article.class);
         Long id = 1L;
 
         // when
         doNothing().when(articleRepository).updateViewsById(anyLong());
-        articleService.updateView(id, request, response);
+        articleService.updateViews(id);
 
         // then
         verify(articleRepository, times(1)).updateViewsById(id);

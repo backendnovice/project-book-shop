@@ -1,8 +1,8 @@
 /**
  * @author   : backendnovice@gmail.com
  * @created  : 2023-08-30
- * @modified : 2023-09-04
- * @desc     : CommentRepository test class.
+ * @modified : 2023-09-19
+ * @desc     : CommentRepository 테스트 클래스.
  */
 
 package backendnovice.projectbookshop.board.comment.repository;
@@ -34,7 +34,7 @@ public class CommentRepositoryTests {
     private CommentRepository commentRepository;
 
     /**
-     * Initialize before all tests. initialize with 150 fake comments
+     * 모든 테스트 전 150개의 가짜 댓글을 생성한다.
      */
     @BeforeAll
     void initialize() {
@@ -60,7 +60,7 @@ public class CommentRepositoryTests {
     }
 
     /**
-     * Test comment select query method with title on succeed.
+     * 올바른 게시글 ID를 파라미터로 댓글 조회 쿼리 메소드를 실행하고 성공 케이스를 테스트한다.
      */
     @Test
     @Disabled
@@ -79,7 +79,7 @@ public class CommentRepositoryTests {
     }
 
     /**
-     * Test comment select query method with title on failed.
+     * 잘못된 게시글 ID를 파라미터로 댓글 조회 쿼리 메소드를 실행하고 실패 케이스를 테스트한다.
      */
     @Test
     void should_ReturnEmptyObject_When_FindAllByArticleIdIsCalledAndFailed() {

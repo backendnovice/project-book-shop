@@ -1,8 +1,8 @@
 /**
  * @author   : backendnovice@gmail.com
  * @created  : 2023-08-30
- * @modified : 2023-09-04
- * @desc     : CommentApiController test class.
+ * @modified : 2023-09-19
+ * @desc     : CommentApiController 테스트 클래스.
  */
 
 package backendnovice.projectbookshop.board.comment.controller;
@@ -44,12 +44,12 @@ public class CommentApiControllerTests {
     @Autowired
     private MockMvc mockMvc;
 
-    private final String PREFIX = "/board/api/v1/comment/";
+    private final String PREFIX = "/api/v1/comment/";
 
     private Page<CommentDTO> fakeComments;
 
     /**
-     * Initialize before all test. initialize "fakeComments"
+     * 모든 테스트 전에 fakeComments 인스턴스를 초기화한다.
      */
     @BeforeAll
     void initialize() {
@@ -60,9 +60,9 @@ public class CommentApiControllerTests {
     }
 
     /**
-     * Test success case for POST request on write comment process.
+     * 댓글 등록 URI에 대한 POST 요청이 성공하는지 테스트한다.
      * @throws Exception
-     *      Throwable exception when using mockMvc.preform().
+     *      mockMvc.preform()에서 발생할 수 있는 예외
      */
     @Test
     void should_ReturnResponseDTOObject_When_WriteIsCalledAndSucceed() throws Exception {
@@ -84,9 +84,9 @@ public class CommentApiControllerTests {
     }
 
     /**
-     * Test failure case for POST request on write comment process.
+     * 비어있는 데이터를 파라미터로 댓글 등록 URI에 대한 POST 요청이 실패하는지 테스트한다.
      * @throws Exception
-     *      Throwable exception when using mockMvc.preform().
+     *      mockMvc.preform()에서 발생할 수 있는 예외
      */
     @Test
     void should_ReturnResponseDTOObject_When_WriteIsCalledAndFailed() throws Exception {
@@ -105,9 +105,9 @@ public class CommentApiControllerTests {
     }
 
     /**
-     * Test success case for GET request on read comment process.
+     * 올바른 데이터를 파라미터로 댓글 조회 URI에 대한 GET 요청이 성공하는지 테스트한다.
      * @throws Exception
-     *      Throwable exception when using mockMvc.preform().
+     *      mockMvc.preform()에서 발생할 수 있는 예외
      */
     @Test
     void should_ReturnResponseDTOObject_When_ReadIsCalledAndSucceed() throws Exception {
@@ -130,9 +130,9 @@ public class CommentApiControllerTests {
     }
 
     /**
-     * Test failure case for GET request on read comment process.
+     * 잘못된 데이터를 파라미터로 댓글 조회 URI에 대한 GET 요청이 실패하는지 테스트한다.
      * @throws Exception
-     *      Throwable exception when using mockMvc.preform().
+     *      mockMvc.preform()에서 발생할 수 있는 예외
      */
     @Test
     void should_ReturnResponseDTOObject_When_ReadIsCalledAndFailed() throws Exception {
@@ -153,9 +153,9 @@ public class CommentApiControllerTests {
     }
 
     /**
-     * Test success case for POST request on modify comment process.
+     * 올바른 데이터를 파라미터로 댓글 수정 URI에 대한 POST 요청이 성공하는지 테스트한다.
      * @throws Exception
-     *      Throwable exception when using mockMvc.preform().
+     *      mockMvc.preform()에서 발생할 수 있는 예외
      */
     @Test
     void should_ReturnResponseDTOObject_When_ModifyIsCalledAndSucceed() throws Exception {
@@ -177,9 +177,9 @@ public class CommentApiControllerTests {
     }
 
     /**
-     * Test failure case for POST request on modify comment process when result is empty.
+     * 잘못된 데이터를 파라미터로 댓글 수정 URI에 대한 POST 요청이 실패하는지 테스트한다.
      * @throws Exception
-     *      Throwable exception when using mockMvc.preform().
+     *      mockMvc.preform()에서 발생할 수 있는 예외
      */
     @Test
     void should_ReturnResponseDTOObject_When_ModifyIsCalledAndFailedCauseResultIsEmpty() throws Exception {
@@ -201,9 +201,9 @@ public class CommentApiControllerTests {
     }
 
     /**
-     * Test failure case for POST request on modify comment process with empty data.
+     * 올바른 데이터를 파라미터로 댓글 수정 URI에 대한 POST 요청이 성공하는지 테스트한다.
      * @throws Exception
-     *      Throwable exception when using mockMvc.preform().
+     *      mockMvc.preform()에서 발생할 수 있는 예외
      */
     @Test
     void should_ReturnResponseDTOObject_When_ModifyIsCalledWithEmptyAndFailed() throws Exception {
@@ -222,9 +222,9 @@ public class CommentApiControllerTests {
     }
 
     /**
-     * Test success case for POST request on delete comment process.
+     * 올바른 ID를 파라미터로 댓글 삭제 URI에 대한 POST 요청이 성공하는지 테스트한다.
      * @throws Exception
-     *      Throwable exception when using mockMvc.preform().
+     *      mockMvc.preform()에서 발생할 수 있는 예외
      */
     @Test
     void should_ReturnResponseDTOObject_When_DeleteIsCalledAndSucceed() throws Exception {
@@ -243,9 +243,9 @@ public class CommentApiControllerTests {
     }
 
     /**
-     * Test failure case for POST request on modify comment process when result is empty.
+     * 잘못된 ID를 파라미터로 댓글 삭제 URI에 대한 POST 요청이 실패하는지 테스트한다.
      * @throws Exception
-     *      Throwable exception when using mockMvc.preform().
+     *      mockMvc.preform()에서 발생할 수 있는 예외
      */
     @Test
     void should_ReturnResponseDTOObject_When_DeleteIsCalledAndFailedCauseResultIsEmpty() throws Exception {
@@ -264,9 +264,9 @@ public class CommentApiControllerTests {
     }
 
     /**
-     * Test failure case for POST request on delete comment process with empty data.
+     * 비어있는 ID를 파라미터로 댓글 삭제 URI에 대한 POST 요청이 실패하는지 테스트한다.
      * @throws Exception
-     *      Throwable exception when using mockMvc.preform().
+     *      mockMvc.preform()에서 발생할 수 있는 예외
      */
     @Test
     void should_ReturnResponseDTOObject_When_DeleteIsCalledWithEmptyAndFailed() throws Exception {

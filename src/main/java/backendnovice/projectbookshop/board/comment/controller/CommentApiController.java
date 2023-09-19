@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping("/board/api/v1/comment")
+@RequestMapping("/api/v1/comment")
 public class CommentApiController {
     private final CommentService commentService;
 
