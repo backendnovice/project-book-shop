@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/common :: common-head ('Book\'s Pub :: 오류페이지')}">
+</head>
+<body>
+    <!-- 헤더 영역 -->
+    <header th:replace="~{layout/common :: common-header}">
+    </header>
+
+    <!-- 에러 영역 -->
+    <div class="container vh-100">
+        <h1>500</h1>
+        <p>서버에 에러가 발생하여 페이지를 표시할 수 없습니다.</p>
+    </div>
+
+    <!-- 푸터 영역 -->
+    <footer th:replace="~{layout/common :: common-footer}">
+    </footer>
+</body>
+</html>

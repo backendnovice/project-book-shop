@@ -23,6 +23,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CallErrorPageException.class)
     public String handleCallErrorPageException(Model model, CallErrorPageException exception) {
         model.addAttribute("message", exception.getMessage());
-        return "errors/error";
+        return "error/other";
     }
 }
