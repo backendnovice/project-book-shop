@@ -1,7 +1,7 @@
 /**
  * @author   : backendnovice@gmail.com
  * @created  : 2023-07-25
- * @modified : 2023-09-18
+ * @modified : 2023-09-27
  * @desc     : 게시글 관련 POST, GET 요청을 핸들링하여 URI와 데이터를 제공하는 컨트롤러 클래스.
  */
 
@@ -55,16 +55,16 @@ public class ArticleController {
     public String getListPage(Model model, PaginationDTO pageDTO, Pageable pageable) {
         final String TAG = pageDTO.getTag();
         final String KEYWORD = pageDTO.getKeyword();
-        Page<ArticleDTO> data = null;
+        Page<ArticleDTO> dto = null;
         PaginationDTO paginationDTO = new PaginationDTO();
 
         try {
             if(TAG == null || KEYWORD == null) {
-                data = articleService.searchAll(pageable);
+                dto = articleService.searchAll(pageable);
             }else {
-                data = articleService.searchByTags(pageDTO, pageable);
+                dto = articleService.searchByTags(pageDTO, pageable);
             }
-            paginationDTO = new PaginationDTO(data);
+            paginationDTO = new PaginationDTO(dto);
         } catch (NoSuchElementException e) {
             message = "게시글을 찾을 수 없습니다.";
             model.addAttribute("message", message);
@@ -73,7 +73,7 @@ public class ArticleController {
             model.addAttribute("message", message);
         }
 
-        model.addAttribute("data", data);
+        model.addAttribute("dto", dto);
         model.addAttribute("pagination", paginationDTO);
         return "article/list";
     }
@@ -99,7 +99,7 @@ public class ArticleController {
             ArticleDTO result = articleService.read(id);
             articleService.updateViews(id);
             result.setViews(result.getViews() + 1);
-            model.addAttribute("data", result);
+            model.addAttribute("dto", result);
             return "article/read";
         } catch (NoSuchElementException e) {
             message = "조회할 게시글이 존재하지 않습니다.";

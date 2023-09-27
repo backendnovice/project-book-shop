@@ -1,8 +1,8 @@
 /**
  * @author   : backendnovice@gmail.com
  * @created  : 2023-07-29
- * @modified : 2023-09-04
- * @desc     : A page-related data transfer object class. that used to books and articles.
+ * @modified : 2023-09-18
+ * @desc     : 레이어 간의 통신을 담당하는 페이지 데이터 전송 객체.
  */
 
 package backendnovice.projectbookshop.global.dto;
@@ -18,7 +18,7 @@ import org.springframework.data.domain.Pageable;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PageDTO {
+public class PaginationDTO {
     private String tag;
 
     private String keyword;
@@ -29,7 +29,7 @@ public class PageDTO {
 
     private int finalPage;
 
-    public PageDTO(Page<?> page) {
+    public PaginationDTO(Page<?> page) {
         Pageable pageable = page.getPageable();
 
         if(pageable.isPaged()) {

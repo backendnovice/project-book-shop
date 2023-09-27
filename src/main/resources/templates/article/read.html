@@ -3,67 +3,145 @@
 <head th:replace="~{layout/common :: common-head ('Board Read')}">
 </head>
 <body>
-    <!-- Header -->
+    <!-- 헤더 영역 -->
     <header th:replace="~{layout/common :: common-header}">
     </header>
 
-    <!-- main -->
+    <!-- 숨김 영역 -->
+    <input type="hidden" id="id" th:value="${dto.id}">
+
+    <!-- 메인 영역 -->
     <div class="container">
-        <!-- title section -->
         <div class="text-center mb-3">
-            <h3>Board Read</h3>
+            <h3 id="" th:text="${dto.title}"></h3>
+            <hr>
         </div>
-        <!-- read form -->
+        <div class="text-end mb-3">
+            <p th:text="'작성자: ' + ${dto.writer}"></p>
+            <p th:text="'조회수: ' + ${dto.views}"></p>
+            <hr>
+        </div>
         <div class="mb-3">
-            <div class="form-floating mb-3">
-                <input class="form-control" type="text" id="title" th:value="${dto.title}" readonly>
-                <label for="title">Title</label>
-            </div>
-            <div class="form-floating mb-3">
-                <input class="form-control" type="text" id="writer" th:value="${dto.writer}" readonly>
-                <label for="writer">Author</label>
-            </div>
-            <div class="form-floating mb-3">
-                <input class="form-control" type="text" id="view" th:value="${dto.view}" readonly>
-                <label for="view">Views</label>
-            </div>
             <div class="mb-3" th:utext="${dto.content}" style="min-height: 400px;">
             </div>
         </div>
-        <div class="mb-3">
-            <button class="btn btn-primary" type="button" id="btn-modify">Modify</button>
-            <button class="btn btn-dark" type="button" id="btn-back">Go Back</button>
+        <hr class="mb-2">
+        <!-- 댓글 작성 폼 -->
+        <div class="mb-2">
+            <div class="form-floating">
+                <input class="form-control" type="text" id="comment-writer" name="writer" placeholder="작성자">
+                <label for="comment-writer">작성자</label>
+            </div>
+            <div class="form-floating">
+                <textarea class="form-control mb-2" placeholder="댓글을 등록하세요" id="comment-content" name="content" style="min-height: 100px;"></textarea>
+                <label for="comment-content">댓글을 등록하세요</label>
+            </div>
+            <button class="btn btn-primary" id="btn-write">댓글 등록</button>
+        </div>
+        <hr class="mb-2">
+        <!-- 댓글 목록 -->
+        <div id="comment-list">
+
+        </div>
+        <!-- 버튼 영역 -->
+        <div class="d-flex flex-row justify-content-center mb-2">
+            <button class="btn btn-primary me-2" type="button" id="btn-modify">글 수정</button>
+            <button class="btn btn-dark" type="button" id="btn-back">뒤로 가기</button>
         </div>
     </div>
 
-<!-- hidden -->
-<input type="hidden" id="id" th:value="${dto.id}">
+    <!-- 푸터 영역 -->
+    <footer th:replace="~{layout/common :: common-footer}">
+    </footer>
 
-<!-- Footer -->
-<footer th:replace="~{layout/common :: common-footer}">
-</footer>
+    <!-- 페이지 스크립트 -->
+    <script>
+        const writeButton = document.getElementById('btn-write');
+        const backButton = document.getElementById('btn-back');
+        const modifyButton = document.getElementById('btn-modify');
+        const articleId = document.getElementById('id').value;
 
-<!-- Script -->
-<script>
-    const backButton = document.getElementById('btn-back');
-    const modifyButton = document.getElementById('btn-modify');
+        window.onload = function() {
+            loadComments(articleId);
+        }
 
-    backButton.onclick = function() {
-        goBackPage();
-    }
+        writeButton.onclick = () => {
+            writeComment();
+        };
+        backButton.onclick = () => window.history.back();
+        modifyButton.onclick = () => location.href = 'modify?id=' + encodeURI(articleId);
 
-    modifyButton.onclick = function() {
-        goModifyPage();
-    }
+        function goModifyPage() {
+            let id = document.getElementById('id').value;
+            location.href = "modify?id=" + encodeURI(id);
+        }
 
-    function goBackPage() {
-        window.history.back();
-    }
+        function loadComments(id) {
+            const url = '/api/v1/comment/read?id=' + id;
+            const option = {
+                method: 'GET',
+                headers: {
+                    'content-type': 'application/json'
+                },
+            };
 
-    function goModifyPage() {
-        let id = document.getElementById('id').value;
-        location.href = "modify?id=" + encodeURI(id);
-    }
-</script>
+            fetch(url, option)
+                .then(response => response.json())
+                .then(json => {
+                    const commentsDiv = document.getElementById('comment-list');
+                    if (json.data === undefined) {
+                        const message = document.getElementById('p');
+                        message.textContent = json.message;
+                    } else {
+                        const data = json.data;
+                        data.content.forEach(comment => {
+                            const commentDiv = document.createElement('div');
+                            commentDiv.classList.add('mb-2');
+                            const writer = document.createElement('h4');
+                            writer.textContent = comment.writer;
+                            const content = document.createElement('pre');
+                            content.textContent = comment.content;
+                            commentDiv.appendChild(writer);
+                            commentDiv.appendChild(content);
+                            commentsDiv.appendChild(commentDiv);
+                        });
+                    }
+                });
+        }
+
+        function writeComment() {
+            if (checkIsNotEmpty()) {
+                const writer = document.getElementById('comment-writer').value;
+                const content = document.getElementById('comment-content').value;
+                const url = '/api/v1/comment/write';
+                const option = {
+                    method: 'POST',
+                    headers: {
+                        'content-type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        id: articleId,
+                        writer: writer,
+                        content: content,
+                    }),
+                };
+                fetch(url, option);
+            }
+        }
+
+        function checkIsNotEmpty() {
+            const writer = document.getElementById('comment-writer').value;
+            const content = document.getElementById('comment-content').value;
+            if (writer === '') {
+                alert('작성자는 비울 수 없습니다.');
+                return false;
+            }
+            if (content === '') {
+                alert('빈 댓글을 등록할 수 없습니다.');
+                return false;
+            }
+            return true;
+        }
+    </script>
 </body>
 </html>

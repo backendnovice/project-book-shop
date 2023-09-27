@@ -1,12 +1,14 @@
 /**
  * @author   : backendnovice@gmail.com
  * @created  : 2023-08-20
- * @modified : 2023-09-18
+ * @modified : 2023-09-27
  * @desc     : 댓글 관련 로직을 구현하는 서비스 클래스.
  */
 
 package backendnovice.projectbookshop.board.comment.service;
 
+import backendnovice.projectbookshop.board.article.domain.Article;
+import backendnovice.projectbookshop.board.article.service.ArticleService;
 import backendnovice.projectbookshop.board.comment.domain.Comment;
 import backendnovice.projectbookshop.board.comment.dto.CommentDTO;
 import backendnovice.projectbookshop.board.comment.repository.CommentRepository;
@@ -22,8 +24,11 @@ import java.util.NoSuchElementException;
 public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
 
-    public CommentServiceImpl(CommentRepository commentRepository) {
+    private final ArticleService articleService;
+
+    public CommentServiceImpl(CommentRepository commentRepository, ArticleService articleService) {
         this.commentRepository = commentRepository;
+        this.articleService = articleService;
     }
 
     @Override
@@ -37,7 +42,11 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public void write(CommentDTO commentDTO) {
-        commentRepository.save(convertToEntity(commentDTO));
+        Article article = articleService.getArticle(commentDTO.getId())
+                .orElseThrow(NoSuchElementException::new);
+        Comment comment = convertToEntity(commentDTO);
+        comment.setArticle(article);
+        commentRepository.save(comment);
     }
 
     @Override

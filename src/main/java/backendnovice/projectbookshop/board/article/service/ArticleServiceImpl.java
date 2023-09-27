@@ -1,7 +1,7 @@
 /**
  * @author   : backendnovice@gmail.com
  * @created  : 2023-07-25
- * @modified : 2023-09-18
+ * @modified : 2023-09-27
  * @desc     : 게시글 관련 로직을 구현하는 서비스 클래스.
  */
 
@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 public class ArticleServiceImpl implements ArticleService {
@@ -70,6 +71,11 @@ public class ArticleServiceImpl implements ArticleService {
                 .orElseThrow(NoSuchElementException::new);
 
         return convertToDTO(article);
+    }
+
+    @Override
+    public Optional<Article> getArticle(Long id) {
+        return articleRepository.findById(id);
     }
 
     @Override
@@ -171,6 +177,7 @@ public class ArticleServiceImpl implements ArticleService {
                 .content(article.getContent())
                 .writer(article.getWriter())
                 .date(article.getModifiedDate())
+                .views(article.getViews())
                 .build();
     }
 

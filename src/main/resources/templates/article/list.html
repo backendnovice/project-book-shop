@@ -3,132 +3,113 @@
 <head th:replace="~{layout/common :: common-head ('Board List')}">
 </head>
 <body>
-<!-- Header -->
-<header th:replace="~{layout/common :: common-header}">
-</header>
+    <!-- 헤더 섹션 -->
+    <header th:replace="~{layout/common :: common-header}">
+    </header>
 
-<!-- main -->
-<div class="container">
-    <!-- title section -->
-    <div class="text-center">
-        <h3>Board List</h3>
-    </div>
-    <!-- search section -->
-    <div class="container mb-3">
-        <form class="d-flex flex-row" id="form-search" method="GET" th:action="@{~/article/list}">
-            <select class="form-select w-25" id="select-tag" name="tag">
-                <option value="title" selected>Title</option>
-                <option value="content">Content</option>
-                <option value="writer">Writer</option>
-            </select>
-            <div class="form-floating w-75">
-                <input class="form-control" type="search" id="keyword" name="keyword" placeholder="Search keyword">
-                <label for="keyword">Search Keyword</label>
-            </div>
-            <button type="button" class="btn btn-primary" id="btn-search">
-                Search
-            </button>
-        </form>
-    </div>
-    <!-- list section -->
-    <div class="container mb-3">
-        <div class="bg-light shadow rounded" th:each="data : ${dto}">
-            <div class="d-flex flex-row mb-3">
-                <img class="p-1" src="/image/thumbnail-alt.png" style="height: 80px; width: 80px;">
-                <div class="d-flex flex-column ms-2 mt-2" th:onclick="|location.href='@{/article/read(id=${data.id})}'|" style="cursor: pointer;">
-                    <h5 class="text-dark" th:text="${data.title}"></h5>
-                    <div class="d-flex flex-row">
-                        <h6 class="text-secondary me-2" th:text="${data.writer}"></h6>
-                        <h6 class="vr me-2"></h6>
-                        <h6 class="text-secondary me-2" th:text="${#temporals.format(data.date, 'YYYY-MM-dd')}"></h6>
-                        <h6 class="vr me-2"></h6>
-                        <h6 class="text-secondary" th:text="${data.view} + ' views'"></h6>
-                        <h6 class="vr me-2"></h6>
-                        <h6 class="text-secondary" th:text="${data.likes} + ' likes'"></h6>
+    <!-- 게시판 영역 -->
+    <div class="container min-vh-100">
+        <h3 class="text-center">자유 게시판</h3>
+        <!-- 검색 영역 -->
+        <div class="container mb-3">
+            <form class="d-flex flex-row" id="form-search" method="GET" th:action="@{~/article/list}">
+                <select class="form-select w-25" id="select-tag" name="tag">
+                    <option value="title" selected>제목</option>
+                    <option value="content">내용</option>
+                    <option value="writer">작성자</option>
+                </select>
+                <div class="form-floating w-75">
+                    <input class="form-control" type="search" id="keyword" name="keyword" placeholder="검색어">
+                    <label for="keyword">검색어</label>
+                </div>
+                <button type="button" class="btn btn-primary" id="btn-search">검색</button>
+            </form>
+        </div>
+        <!-- 글 목록 -->
+        <div class="container mb-3">
+            <div class="bg-light shadow rounded" th:each="data : ${dto}">
+                <div class="d-flex flex-row mb-3">
+                    <img class="p-1" src="/image/thumbnail-alt.png" style="height: 80px; width: 80px;">
+                    <div class="d-flex flex-column ms-2 mt-2" th:onclick="|location.href='@{/article/read(id=${data.id})}'|" style="cursor: pointer;">
+                        <h5 class="text-dark" th:text="${data.title}"></h5>
+                        <div class="d-flex flex-row">
+                            <h6 class="text-secondary me-2" th:text="${data.writer}"></h6>
+                            <h6 class="vr me-2"></h6>
+                            <h6 class="text-secondary me-2" th:text="${#temporals.format(data.date, 'YYYY-MM-dd')}"></h6>
+                            <h6 class="vr me-2"></h6>
+                            <h6 class="text-secondary me-2" th:text="'조회수 ' + ${data.views}"></h6>
+                            <h6 class="vr me-2"></h6>
+                            <h6 class="text-secondary" th:text="'댓글수 ' + ${data.commentCount}"></h6>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+        <!-- 페이지네이션 -->
+        <div class="d-flex justify-content-center">
+            <ul class="pagination" th:with="start=${pagination.startPage}, current=${pagination.currentPage}, final=${pagination.finalPage}, tag=${pagination.tag}, keyword=${pagination.keyword}">
+                <th:block th:if="${tag == null && keyword == null}">
+                    <li class="page-item">
+                        <strong class="page-link disabled" th:if="${start == current}">Prev</strong>
+                        <a class="page-link" th:if="${current > start}" th:href="@{/article/list(page=${current - 1})}">Prev</a>
+                    </li>
+                    <li class="page-item" th:each="page : ${#numbers.sequence(start + 1, final + 1)}">
+                        <strong class="page-link disabled" th:if="${page == current + 1}" th:text="${page}"></strong>
+                        <a class="page-link" th:if="${page != current + 1}" th:href="@{/article/list(page=${page - 1})}" th:text="${page}"></a>
+                    </li>
+                    <li class="page-item">
+                        <strong class="page-link disabled" th:if="${final == current}">Next</strong>
+                        <a class="page-link" th:if="${current < final}" th:href="@{/article/list(page=${current + 1})}">Next</a>
+                    </li>
+                </th:block>
+                <th:block th:unless="${tag == null && keyword == null}">
+                    <li class="page-item">
+                        <strong class="page-link disabled" th:if="${start == current}">Prev</strong>
+                        <a class="page-link" th:if="${current > start}" th:href="@{/article/list(page=${current - 1}, tag=${tag}, keyword=${keyword})}">Prev</a>
+                    </li>
+                    <li class="page-item" th:each="page : ${#numbers.sequence(start + 1, final + 1)}">
+                        <strong class="page-link disabled" th:if="${page == current + 1}" th:text="${page}"></strong>
+                        <a class="page-link" th:if="${page != current + 1}" th:href="@{/article/list(page=${page - 1}, tag=${tag}, keyword=${keyword})}" th:text="${page}"></a>
+                    </li>
+                    <li class="page-item">
+                        <strong class="page-link disabled" th:if="${final == current}">Next</strong>
+                        <a class="page-link" th:if="${current < final}" th:href="@{/article/list(page=${current + 1}, tag=${tag}, keyword=${keyword})}">다음</a>
+                    </li>
+                </th:block>
+            </ul>
+        </div>
+        <!-- 버튼 목록 -->
+        <div>
+            <button type="button" class="btn btn-primary" id="btn-write">글쓰기</button>
+        </div>
     </div>
-    <!-- pagination section -->
-    <div class="d-flex justify-content-center">
-        <ul class="pagination" th:with="start=${search.getStartPage()}, current=${search.getCurrentPage()}, final=${search.getFinalPage()}, tag=${search.getTag()}, keyword=${search.getKeyword()}">
-            <th:block th:if="${tag == null && keyword == null}">
-                <li class="page-item">
-                    <strong class="page-link disabled" th:if="${start == current}">Prev</strong>
-                    <a class="page-link" th:if="${current > start}" th:href="@{/article/list(page=${current - 1})}">Prev</a>
-                </li>
-                <li class="page-item" th:each="page : ${#numbers.sequence(start + 1, final + 1)}">
-                    <strong class="page-link disabled" th:if="${page == current + 1}" th:text="${page}"></strong>
-                    <a class="page-link" th:if="${page != current + 1}" th:href="@{/article/list(page=${page - 1})}" th:text="${page}"></a>
-                </li>
-                <li class="page-item">
-                    <strong class="page-link disabled" th:if="${final == current}">Next</strong>
-                    <a class="page-link" th:if="${current < final}" th:href="@{/article/list(page=${current + 1})}">Next</a>
-                </li>
-            </th:block>
-            <th:block th:unless="${tag == null && keyword == null}">
-                <li class="page-item">
-                    <strong class="page-link disabled" th:if="${start == current}">Prev</strong>
-                    <a class="page-link" th:if="${current > start}" th:href="@{/article/list(page=${current - 1}, tag=${tag}, keyword=${keyword})}">Prev</a>
-                </li>
-                <li class="page-item" th:each="page : ${#numbers.sequence(start + 1, final + 1)}">
-                    <strong class="page-link disabled" th:if="${page == current + 1}" th:text="${page}"></strong>
-                    <a class="page-link" th:if="${page != current + 1}" th:href="@{/article/list(page=${page - 1}, tag=${tag}, keyword=${keyword})}" th:text="${page}"></a>
-                </li>
-                <li class="page-item">
-                    <strong class="page-link disabled" th:if="${final == current}">Next</strong>
-                    <a class="page-link" th:if="${current < final}" th:href="@{/article/list(page=${current + 1}, tag=${tag}, keyword=${keyword})}">다음</a>
-                </li>
-            </th:block>
-        </ul>
-    </div>
-    <!-- button section -->
-    <div>
-        <button type="button" class="btn btn-primary" id="btn-write">Write</button>
-    </div>
-</div>
 
-<!-- footer -->
-<footer th:replace="~{layout/common :: common-footer}">
-</footer>
+    <!-- 푸터 영역 -->
+    <footer th:replace="~{layout/common :: common-footer}">
+    </footer>
 
-<!-- script -->
-<script>
-    const searchButton = document.getElementById('btn-search');
-    const writeButton = document.getElementById('btn-write');
+    <!-- 페이지 스크립트 -->
+    <script>
+        const searchButton = document.getElementById('btn-search');
+        const writeButton = document.getElementById('btn-write');
 
-    writeButton.onclick = function() {
-        location.href = "/article/write";
-    }
-
-    searchButton.onclick = function() {
-        submitForm();
-    }
-
-    function submitForm() {
-        let isOk = false;
-
-        if(checkSearchValue()) {
-            isOk = true;
+        writeButton.onclick = () => location.href = '/article/write';
+        searchButton.onclick = () => {
+            const isNotEmpty = checkKeywordValid();
+            if (isNotEmpty) {
+                const form = document.getElementById('form-search');
+                form.submit();
+            }
         }
 
-        if(isOk) {
-            let form = document.getElementById('form-search');
-            form.submit();
+        function checkKeywordValid() {
+            const keyword = document.getElementById('keyword').value;
+            if(keyword === '') {
+                alert('검색어를 입력해 주세요.');
+                return false;
+            }
+            return true;
         }
-    }
-
-    function checkSearchValue() {
-        let search = document.getElementById('keyword').value;
-
-        if(search === "") {
-            alert("검색어를 입력해 주세요.");
-            return false;
-        }
-
-        return true;
-    }
-</script>
+    </script>
 </body>
 </html>

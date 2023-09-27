@@ -1,7 +1,7 @@
 /**
  * @author   : backendnovice@gmail.com
  * @created  : 2023-08-20
- * @modified : 2023-09-18
+ * @modified : 2023-09-27
  * @desc     : 댓글 테이블을 관리하는 엔티티 클래스.
  */
 
@@ -31,6 +31,7 @@ public class Comment extends Time {
     @Column(name = "COMMENT_WRITER")
     private String writer;
 
+    @Setter
     @ManyToOne
     @JoinColumn(name = "ARTICLE_ID")
     private Article article;

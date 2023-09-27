@@ -1,7 +1,7 @@
 /**
  * @author   : backendnovice@gmail.com
  * @created  : 2023-08-20
- * @modified : 2023-09-18
+ * @modified : 2023-09-27
  * @desc     : 댓글 관련 POST, GET 요청을 핸들링하여 데이터를 제공하는 컨트롤러 클래스.
  */
 
@@ -37,13 +37,21 @@ public class CommentApiController {
      *      결과 메시지
      */
     @PostMapping("/write")
-    public ResponseDTO<?> write(CommentDTO commentDTO) {
+    public ResponseDTO<?> write(@RequestBody CommentDTO commentDTO) {
+        System.out.println(commentDTO.getId());
+        System.out.println(commentDTO.getContent());
+        System.out.println(commentDTO.getWriter());
         if (commentDTO.getContent() == null || commentDTO.getWriter() == null) {
             message = "올바르지 않은 요청입니다.";
         } else {
-            commentService.write(commentDTO);
-            message = "댓글 등록이 완료되었습니다.";
+            try {
+                commentService.write(commentDTO);
+                message = "댓글 등록이 완료되었습니다.";
+            } catch (NoSuchElementException e) {
+                message = "게시글이 존재하지 않습니다.";
+            }
         }
+
         return ResponseDTO.of(HttpStatus.OK.value(), message, null);
     }
 
