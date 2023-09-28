@@ -1,52 +1,47 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{layout/common :: common-head ('Board Read')}">
+<head th:replace="~{layout/common :: common-head ('Book\'s Pub :: 게시글 작성')}">
 </head>
 <body>
-    <!-- header -->
+    <!-- 헤더 영역 -->
     <header th:replace="~{layout/common :: common-header}">
     </header>
 
-    <!-- main -->
+    <!-- 메인 영역 -->
     <div class="container">
-        <!-- title section -->
-        <div class="text-center mb-3">
-            <h3>Write Article</h3>
-        </div>
-        <!-- write form -->
         <div class="mb-3">
             <form class="container mb-3" id="form-write" method="POST" th:action="@{~/article/write}">
                 <div class="form-floating mb-3">
-                    <input class="form-control" type="text" id="title" name="title" maxlength="255" placeholder="Title">
-                    <label for="title">Title</label>
+                    <input class="form-control" type="text" id="title" name="title" maxlength="255" placeholder="제목">
+                    <label for="title">제목</label>
                 </div>
                 <div class="form-floating mb-3">
-                    <input class="form-control" type="text" id="writer" name="writer" maxlength="255" placeholder="Writer">
-                    <label for="writer">Writer</label>
+                    <input class="form-control" type="text" id="writer" name="writer" maxlength="255" placeholder="작성자">
+                    <label for="writer">작성자</label>
                 </div>
                 <div class="mb-3">
                     <textarea class="form-control" id="content" name="content"></textarea>
                 </div>
             </form>
             <div class="mb-3">
-                <button class="btn btn-primary" type="button" id="btn-write">Write Post</button>
-                <button class="btn btn-dark" type="button" id="btn-back">Back</button>
+                <button class="btn btn-primary" type="button" id="btn-write">글 등록</button>
+                <button class="btn btn-dark" type="button" id="btn-back">뒤로 가기</button>
             </div>
         </div>
     </div>
 
-    <!-- footer -->
+    <!-- 푸터 영역 -->
     <footer th:replace="~{layout/common :: common-footer}">
     </footer>
 
-    <!-- page script -->
+    <!-- 페이지 스크립트 -->
     <script>
         const writeButton = document.getElementById('btn-write');
         const backButton = document.getElementById('btn-back');
         let editor;
 
         ClassicEditor
-            .create(document.querySelector("#content"))
+            .create(document.querySelector('#content'))
             .then(newEditor => {
                 editor = newEditor;
             })
@@ -63,48 +58,28 @@
         }
 
         function submitForm() {
-            let isOk = false;
-
-            if(checkTitle() && checkContent() && checkWriter()) {
-                isOk = true;
-            }
-
-            if(isOk) {
+            if (checkIsNotNull()) {
                 let form = document.getElementById('form-write');
                 form.submit();
             }
         }
 
-        function checkTitle() {
+        function checkIsNotNull() {
             const title = document.getElementById('title').value;
-
-            if(title === "") {
-                alert("Please enter the post title.");
-                return false;
-            }
-
-            return true;
-        }
-
-        function checkContent() {
-            const content = editor.getData();
-
-            if(content === "") {
-                alert("Please enter the post content.");
-                return false;
-            }
-
-            return true;
-        }
-
-        function checkWriter() {
             const writer = document.getElementById('writer').value;
-
-            if(writer === "") {
-                alert("Please enter the post writer.");
+            const content = editor.getData;
+            if (title === '') {
+                alert('제목은 비워둘 수 없습니다.');
                 return false;
             }
-
+            if (writer === '') {
+                alert('작성자는 비워둘 수 없습니다.');
+                return false;
+            }
+            if (content === '') {
+                alert('내용은 비워둘 수 없습니다.');
+                return false;
+            }
             return true;
         }
     </script>

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{layout/common :: common-head ('Board Read')}">
+<head th:replace="~{layout/common :: common-head ('Book\'s Pub :: 게시글 조회')}">
 </head>
 <body>
     <!-- 헤더 영역 -->
@@ -63,18 +63,16 @@
 
         window.onload = function() {
             loadComments(articleId);
-        }
-
+        };
         writeButton.onclick = () => {
             writeComment();
         };
-        backButton.onclick = () => window.history.back();
-        modifyButton.onclick = () => location.href = 'modify?id=' + encodeURI(articleId);
-
-        function goModifyPage() {
-            let id = document.getElementById('id').value;
-            location.href = "modify?id=" + encodeURI(id);
-        }
+        backButton.onclick = () => {
+            window.history.back();
+        };
+        modifyButton.onclick = () => {
+            location.href = 'modify?id=' + encodeURI(articleId);
+        };
 
         function loadComments(id) {
             const url = '/api/v1/comment/read?id=' + id;
@@ -84,11 +82,11 @@
                     'content-type': 'application/json'
                 },
             };
-
             fetch(url, option)
                 .then(response => response.json())
                 .then(json => {
                     const commentsDiv = document.getElementById('comment-list');
+                    commentsDiv.innerHTML = '';
                     if (json.data === undefined) {
                         const message = document.getElementById('p');
                         message.textContent = json.message;

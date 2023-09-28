@@ -126,7 +126,7 @@ public class ArticleController {
         }
         try {
             ArticleDTO result = articleService.read(id);
-            model.addAttribute("data", result);
+            model.addAttribute("dto", result);
             return "article/modify";
         } catch (NoSuchElementException e) {
             message = "수정할 게시글이 존재하지 않습니다.";

@@ -1,47 +1,42 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{layout/common :: common-head ('Board Modify')}">
+<head th:replace="~{layout/common :: common-head ('Book\'s Pub :: 게시글 수정')}">
 </head>
 <body>
-    <!-- header -->
+    <!-- 헤더 영역 -->
     <header th:replace="~{layout/common :: common-header}">
     </header>
 
-    <!-- main -->
+    <!-- 메인 영역 -->
     <div class="container">
-        <!-- title section -->
-        <div class="text-center mb-3">
-            <h3>Board Modify</h3>
-        </div>
-        <!-- modify section -->
-        <div class="mb-3">
+        <div class="mb-3 mt-3">
             <form class="container mb-3" id="form-modify" method="POST" th:action="@{~/article/modify}">
                 <input type="hidden" id="id" name="id" th:value="${dto.getId()}">
                 <div class="form-floating mb-3">
-                    <input class="form-control" type="text" id="title" name="title" maxlength="255" placeholder="Title" th:value="${dto.title}">
-                    <label for="title">Title</label>
+                    <input class="form-control" type="text" id="title" name="title" maxlength="255" placeholder="제목" th:value="${dto.title}">
+                    <label for="title">제목</label>
                 </div>
                 <div class="form-floating mb-3">
-                    <input class="form-control" type="text" id="writer" name="writer" maxlength="255" th:value="${dto.writer}">
-                    <label for="writer">Writer</label>
+                    <input class="form-control" type="text" id="writer" name="writer" maxlength="255" placeholder="작성자" th:value="${dto.writer}">
+                    <label for="writer">작성자</label>
                 </div>
                 <div class="mb-3">
-                    <textarea class="form-control" id="content" name="content" maxlength="255" placeholder="Content" th:text="${dto.content}"></textarea>
+                    <textarea class="form-control" id="content" name="content" maxlength="255" placeholder="내용" th:text="${dto.content}"></textarea>
                 </div>
                 <div class="mb-3">
-                    <button class="btn btn-primary" type="button" id="btn-modify">Modify Post</button>
-                    <button class="btn btn-danger" type="button" id="btn-delete">Delete Post</button>
-                    <button class="btn btn-dark" type="button" id="btn-back">Back</button>
+                    <button class="btn btn-primary" type="button" id="btn-modify">글 수정</button>
+                    <button class="btn btn-danger" type="button" id="btn-delete">글 삭제</button>
+                    <button class="btn btn-dark" type="button" id="btn-back">뒤로가기</button>
                 </div>
             </form>
         </div>
     </div>
 
-<!-- footer -->
+<!-- 푸터 영역 -->
 <footer th:replace="~{layout/common :: common-footer}">
 </footer>
 
-<!-- page script -->
+<!-- 페이지 스크립트 -->
 <script>
     const modifyButton = document.getElementById('btn-modify');
     const deleteButton = document.getElementById('btn-delete');
@@ -62,7 +57,7 @@
     }
 
     deleteButton.onclick = function() {
-        let isOk = confirm("Wanna delete this post?");
+        let isOk = confirm("이 글을 정말로 삭제하겠습니까?");
 
         if(isOk) {
             let form = document.getElementById('form-modify');
@@ -76,37 +71,24 @@
     }
 
     function submitForm() {
-        let isOk = false;
-
-        if(checkTitle() && checkContent()) {
-            isOk = true;
-        }
-
-        if(isOk) {
-            let form = document.getElementById('form-modify');
+        if (checkIsNotNull()) {
+            const form = document.getElementById('form-modify');
             form.submit();
         }
     }
 
-    function checkTitle() {
+    function checkIsNotNull() {
         const title = document.getElementById('title').value;
+        const content = document.getElementById('content').value;
 
-        if(title === "") {
-            alert("Please enter the post title.");
+        if (title === '') {
+            alert('제목은 비워둘 수 없습니다.');
             return false;
         }
-
-        return true;
-    }
-
-    function checkContent() {
-        const content = editor.getData();
-
-        if(content === "") {
-            alert("Please enter the post content.");
+        if (content === '') {
+            alert('내용은 비워둘 수 없습니다.');
             return false;
         }
-
         return true;
     }
 </script>
